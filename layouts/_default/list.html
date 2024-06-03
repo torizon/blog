@@ -1,0 +1,60 @@
+{{ define "main" }}
+<div id="hero">
+    <div class="container">
+        <h1>Engineering<br/>at the Edge</h1>
+        <p>Welcome to the Torizon R&D team's blog.</p>
+    </div>
+</div>
+
+<div id="last-post">
+    {{ with (index .Pages.ByDate.Reverse 0) }}
+    <div id="last-post-pic">
+        <a href="{{ .Permalink }}"><img src="{{ .Params.Image }}" alt="Card Image"></a>
+    </div>
+    <div class="card-content">
+        <p class="card-date">{{ .Date.Format "January 02, 2006" }}</p>
+        {{ if .Params.Series }}<h6>{{ .Params.Series }}</h6>{{ end }}
+        <h4 class="card-title"><a href="{{ .Permalink }}">{{ .Title }}</a></h4>
+        <p class="card-description">{{ .Params.Abstract | truncate 200 }}</p>
+    </div>
+    {{ end }}
+</div>
+
+<main class="container" id="posts-list">
+    <label for="select-tag">Filter by:</label>
+    <select name="select-tag" id="select-tag">
+        {{ range .Site.Params.tags }}
+        <option value=".">{{ . }}</option>
+        {{ end }}
+    </select>
+    <div id="posts">
+        {{ $paginator := .Paginate (after 1 .Pages) }}
+        {{ range .Paginator.Pages }}
+        <div class="card">
+            <a href="{{ .Permalink }}"><img src="{{ .Params.Image }}" alt="Card Image"></a>
+            <div class="card-content">
+                <p class="card-date">{{ .Date.Format "January 02, 2006" }}</p>
+                {{ if .Params.Series }}<h6>{{ .Params.Series }}</h6>{{ end }}
+                <h4 class="card-title"><a href="{{ .Permalink }}">{{ .Title }}</a></h4>
+                <p class="card-description">{{ .Params.Abstract | truncate 100 }}</p>
+                <p class="card-tags">
+                    {{ range .Params.tags }}
+                    <span>{{ . }}</span>
+                    {{ end }}
+                </p>
+            </div>
+        </div>
+        {{ end }}
+    </div>
+
+    <div id="paginator">
+        {{ if .Paginator.HasPrev }}
+        <a href="{{ .Paginator.Prev.URL }}">Previous</a>
+        {{ end }}
+        <div style="flex-grow: 1;"></div>
+        {{ if .Paginator.HasNext }}
+        <a href="{{ .Paginator.Next.URL }}">Next</a>
+        {{ end }}
+    </div>
+</main>
+{{ end }}
