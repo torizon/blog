@@ -18,6 +18,8 @@ This begs the question: how do we access hardware resources like GPIOs from insi
 ## A GPU acceleration primer
 To run GPU accelerated applications on Linux in general you need some components in the userspace and some other components in the kernel space. So when you have an application that needs hardware acceleration, you link against libraries that provide a graphics API such as OpenGL which will in turn talk to another library that issues the `ioctl()` calls to the device descriptor created by the GPU driver.
 
+![a basic diagram showing how the GPU is accessed on Linux](/basic-gpu-diagram-linux.png "Basic GPU stack diagram for Linux")
+
 ## So... containers?
 I hope it's clear that there's a very sharp separation between the userspace components and kernel components for the GPU acceleration. The good thing is that this pattern repeats for every other peripheral and containers are very specifically isolated root filesystems in their own process namespace.
 
@@ -108,7 +110,9 @@ Surface Size: 800x600 windowed
 [pid 204] openat(AT_FDCWD, "/usr/share/glmark2/models/horse.3ds", O_RDONLY) = 9
 ```
 
-I've cleaned up the traces a bit to focus on what's important. To recap: inside our container there are a bunch of libraries that the application (`glmark2`) is using to talk to the hardware. Because we're using a Wayland compositor, the first GPU-related bit you see in the logs above is `libEGL`, which is spoken to by `libwayland-client`, which in turn links against `glmark2`. That's why this variant of `glmark2` has the `es2-wayland` appendage, which means it's targeted at the OpenGLES2 graphics API (provided by `libGLESv2` in the logs above and called by `libEGL`) and is specific to run on top of Wayland (explaining why it's calling `libwayland-client`, `libwayland-cursor` and `libwayland-egl` at the very beginning of the execution).
+I've cleaned up the traces a bit to focus on what's important. 
+
+To recap: inside our container there are a bunch of libraries that the application (`glmark2`) is using to talk to the hardware. Because we're using a Wayland compositor, the first GPU-related bit you see in the logs above is `libEGL`, which is spoken to by `libwayland-client`, which in turn links against `glmark2`. That's why this variant of `glmark2` has the `es2-wayland` appendage, which means it's targeted at the OpenGLES2 graphics API (provided by `libGLESv2` in the logs above and called by `libEGL`) and is specific to run on top of Wayland (explaining why it's calling `libwayland-client`, `libwayland-cursor` and `libwayland-egl` at the very beginning of the execution).
 
 ## Ok, it works, why?
 Let's go back to the issues we had before and how we can overcome then:
@@ -132,7 +136,11 @@ root@e2fa8ffdffe6:/packages# dpkg --contents imx-gpu-viv-wayland_6.4.3.p4.6-1_ar
 
 - somehow expose the device descriptors created by the drivers inside this container should be the same thing as simply running the applications in the "usual" root filesystem
 
-Ok, now we know how the libs get into the container (a nicely packaged, signed, Debian package, through Toradex's feed), how do we allow these libraries to open the device descriptors created by the kernel side? Docker thankfully has a nice mechanism of modifying the rules when a given container starts, giving it more permissions to specific devices. When we ran the `graphics-tests-vivante` container, we passed some obscure flags `--device-cgroup-rule="c 4:* rmw" --device-cgroup-rule="c 13:* rmw" --device-cgroup-rule="c 199:* rmw" --device-cgroup-rule="c 226:* rmw" `. These are the major device nodes for a given hardware, and they describe which hardware is associate with which number. Passing these rules is saying "allow every device with major `{4, 13, 199, 226}`  and any minor to be read (`r`), allowed to create nodes (`m`) and to be written (`w`)".
+Ok, now we know how the libs get into the container (a nicely packaged, signed, Debian package, through Toradex's feed), how do we allow these libraries to open the device descriptors created by the kernel side? Docker thankfully has a nice mechanism of modifying the rules when a given container starts, giving it more permissions to specific devices. 
+
+When we ran the `graphics-tests-vivante` container, we passed some obscure flags `--device-cgroup-rule="c 4:* rmw" --device-cgroup-rule="c 13:* rmw" --device-cgroup-rule="c 199:* rmw" --device-cgroup-rule="c 226:* rmw" `. These are the major device nodes for a given hardware, and they describe which hardware is associate with which number. 
+
+Passing these rules is saying "allow every device with major `{4, 13, 199, 226}`  and any minor to be read (`r`), allowed to create nodes (`m`) and to be written (`w`)".
 
 If we take a look at the documentation[^6] for what the major numbers mean (it's standardized by the kernel) we can see that:
 
