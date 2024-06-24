@@ -4,9 +4,9 @@
             <div class="navbar-logo"><a href="/"><img src="/img/logo.png" /></a></div>
             <ul>
                 <li {{ if (eq .RelPermalink "/") }} selected="true" {{end}} ><a href="/">Blog</a></li>
-                <li {{ if (eq .RelPermalink "/open-source") }} selected="true" {{end}} ><a href="#">Open Source</a></li>
-                <li {{ if (eq .RelPermalink "/about") }} selected="true" {{end}} ><a href="#">About</a></li>
-                <li><a href="#">Jobs</a></li>
+                <!-- <li {{ if (eq .RelPermalink "/open-source") }} selected="true" {{end}} ><a href="#">Open Source</a></li>
+                <li {{ if (eq .RelPermalink "/about") }} selected="true" {{end}} ><a href="#">About</a></li> -->
+                <li><a href="https://torizon.io" target="_blank">Torizon.io <span class="inline-icon">{{ partial "fontawesome" ( print "assets/fa/external.svg" ) }}</span></a></li>
             </ul>
         </div>
     </nav>

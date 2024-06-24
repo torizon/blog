@@ -1,3 +1,1 @@
-<a href="{{ .link }}" class="svg-icon">
-    {{ readFile ( print "assets/fa/" .name ".svg" ) | safeHTML }}
-</a>
+{{ readFile . | safeHTML }}

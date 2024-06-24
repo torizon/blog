@@ -299,6 +299,15 @@ th {
     color: #5f59d5;
 }
 
+.inline-icon {
+    display: inline-block;
+}
+
+.inline-icon svg {
+    max-width: 10px;
+    min-width: 10px;
+}
+
 footer {
     background-color: #333;
     padding: 1rem;
