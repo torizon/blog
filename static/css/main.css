@@ -26,6 +26,8 @@ nav .container {
 
 nav ul {
     list-style-type: none;
+    flex-grow: 1;
+    text-align: right;
 }
 
 .navbar-logo {
@@ -53,6 +55,17 @@ nav ul li a {
     color: #333;
     text-decoration: none;
     transition: text-decoration 0.1s ease;
+}
+
+.github-icon {
+    margin-left: 2rem;
+    display: flex;
+    align-items: center;
+}
+
+.github-icon .inline-icon svg {
+    min-width: 20px;
+    color: #333;
 }
 
 #hero {
