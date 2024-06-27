@@ -7,18 +7,30 @@
         <div id="inline-share">
             <p>SHARE</p>
             <p>
-                {{ partial "fontawesome.html" (dict "name" "twitter" "link" ( print "https://twitter.com/intent/tweet?text=" .Title "\n" .Permalink )) }}
-                {{ partial "fontawesome.html" (dict "name" "linkedin" "link" ( print "https://www.linkedin.com/shareArticle?mini=true&url=" .Permalink )) }}
-                {{ partial "fontawesome.html" (dict "name" "facebook" "link" ( print "https://www.facebook.com/sharer/sharer.php?u=" .Permalink )) }}
+                <a href='{{ ( print "https://twitter.com/intent/tweet?text=" .Title "\n" .Permalink ) }}' class="svg-icon">
+                    {{ partial "fontawesome" "assets/fa/twitter.svg" }}
+                </a>
+                <a href='{{ ( print "https://www.linkedin.com/shareArticle?mini=true&url=" .Permalink ) }}' class="svg-icon">
+                    {{ partial "fontawesome" "assets/fa/linkedin.svg" }}
+                </a>
+                <a href='{{ ( print "https://www.facebook.com/sharer/sharer.php?u=" .Permalink ) }}' class="svg-icon">
+                    {{ partial "fontawesome" "assets/fa/facebook.svg" }}
+                </a>
             </p>
         </div>
     </article>
     <div id="article-sidebar">
         <p>SHARE</p>
         <p>
-            {{ partial "fontawesome.html" (dict "name" "twitter" "link" ( print "https://twitter.com/intent/tweet?text=" .Title "\n" .Permalink )) }}
-            {{ partial "fontawesome.html" (dict "name" "linkedin" "link" ( print "https://www.linkedin.com/shareArticle?mini=true&url=" .Permalink )) }}
-            {{ partial "fontawesome.html" (dict "name" "facebook" "link" ( print "https://www.facebook.com/sharer/sharer.php?u=" .Permalink )) }}
+            <a href='{{ ( print "https://twitter.com/intent/tweet?text=" .Title "\n" .Permalink ) }}' class="svg-icon">
+                {{ partial "fontawesome" "assets/fa/twitter.svg" }}
+            </a>
+            <a href='{{ ( print "https://www.linkedin.com/shareArticle?mini=true&url=" .Permalink ) }}' class="svg-icon">
+                {{ partial "fontawesome" "assets/fa/linkedin.svg" }}
+            </a>
+            <a href='{{ ( print "https://www.facebook.com/sharer/sharer.php?u=" .Permalink ) }}' class="svg-icon">
+                {{ partial "fontawesome" "assets/fa/facebook.svg" }}
+            </a>
         </p>
     </div>
 </main>
