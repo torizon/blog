@@ -1,5 +1,5 @@
 ---
-title: "Why bare-metal Debian (and Raspbery Pi OS) is not a good choice for most Embedded Systems?"
+title: "Why bare-metal Debian (and Raspbery Pi OS) is not a good choice for most Embedded Systems"
 date: 2024-07-01
 author: Leonardo Held, Torizon Developer
 draft: false
