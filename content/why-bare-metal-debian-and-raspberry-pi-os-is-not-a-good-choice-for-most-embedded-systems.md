@@ -1,5 +1,5 @@
 ---
-title: "Why bare-metal Debian (and Raspbery Pi OS) is not a good choice for most Embedded Systems"
+title: "Why bare-metal Debian (and Raspberry Pi OS) is not a good choice for most Embedded Systems"
 date: 2024-07-01
 author: Leonardo Held, Torizon Developer
 draft: false
@@ -31,7 +31,7 @@ And don't even think about relying on `apt` to issue updates. It's a moving targ
 ### Package Drift or 'how do I add package `x` to my image after 2 years of not updating?'
 A lot of people that end up using Debian on the field but cannot manage the infrastructure get cornered in a situation where a package `x` needs to be installed or updated and alas, it needs new dependencies.
 
-Then you get your good revision and try to install/compile the new `x` package and... it doesn't work! `unmet dependencies` and all of that... it's the nature of Debian, things upstream together, at the same time. Mixing package feeds is a bad idea, and it might save a bit of time now, but we see this situation every week, customers really wishing they just had used something more appropriate from the get-go.
+Then you get your good revision and try to install/compile the new `x` package and... it doesn't work! `unmet dependencies` and all of that... it's the nature of Debian, things move upstream together, at the same time. Mixing package feeds is a bad idea, and it might save a bit of time now, but we see this situation every week, customers really wishing they just had used something more appropriate from the get-go.
 
 An addend that I'd like to make here: don't use `snapshot.debian.org`. I see a lot of companies deploying devices pinned to a good, known revision of the Debian archive using the snapshot services, but they quickly find out it's rate limited for a reason.
 
