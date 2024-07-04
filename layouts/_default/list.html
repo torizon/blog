@@ -21,12 +21,12 @@
 </div>
 
 <main class="container" id="posts-list">
-    <label for="select-tag">Filter by:</label>
+    <!-- <label for="select-tag">Filter by:</label>
     <select name="select-tag" id="select-tag">
         {{ range .Site.Params.tags }}
         <option value=".">{{ . }}</option>
         {{ end }}
-    </select>
+    </select> -->
     <div id="posts">
         {{ $paginator := .Paginate (after 1 .Pages) }}
         {{ range .Paginator.Pages }}
