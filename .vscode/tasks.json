@@ -1,0 +1,32 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "start-hugo",
+            "command": "docker",
+            "type": "shell",
+            "args": [
+                "run",
+                "--rm",
+                "-it",
+                "-v",
+                "${workspaceFolder}:/src",
+                "-p",
+                "1313:1313",
+                "klakegg/hugo:ext-alpine",
+                "server"
+            ],
+            "problemMatcher": [
+                "$tsc"
+            ],
+            "presentation": {
+                "reveal": "always"
+            },
+            "icon": {
+                "id": "run",
+                "color": "terminal.ansiBlue"
+            },
+            "group": "none"
+        }
+    ]
+}
