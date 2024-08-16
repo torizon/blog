@@ -336,6 +336,12 @@ footer {
     margin-top: 3rem;
 }
 
+.profile-img {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+}
+
 @media only screen and (max-width: 600px) {
     .navbar-logo img {
         height: 50px;
@@ -386,7 +392,7 @@ footer {
 
     #article-page {
         padding: 1rem;
-    
+
         font-size: 16px;
         max-width: 100%;
     }
