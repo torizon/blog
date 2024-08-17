@@ -1,0 +1,7 @@
+p img + em, div + em, table + p > em {
+    display: block;
+    margin-top: 0.5em;
+    color: #555;
+    font-size: 0.9em;
+    text-align: center;
+}
