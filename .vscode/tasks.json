@@ -3,6 +3,8 @@
     "tasks": [
         {
             "label": "start-hugo",
+            "detail": "Start the Hugo server to be used as a development server",
+            "hide": false,
             "command": "docker",
             "type": "shell",
             "args": [
