@@ -8,15 +8,24 @@ body {
     font-family: 'Open Sans', sans-serif;
 }
 
+header {
+    background-color: #00508d;
+}
+
 nav {
     font-family: 'Courier New', Courier, monospace;
-    background-color: #fff;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    background-color: #00508db6;
+    backdrop-filter: blur(2px);
+    transition: box-shadow 0.5s ease-in-out;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     z-index: 99999;
+}
+
+.nav-scrolled {
+    box-shadow: 0 5px 7px rgba(0, 0, 0, 0.5);
 }
 
 nav .container {
@@ -323,11 +332,20 @@ th {
 }
 
 footer {
-    background-color: #333;
+    background-color: #00508db6;
+    backdrop-filter: blur(2px);
     padding: 1rem;
     margin-top: 2rem;
     color: white;
     text-align: center;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    transition: box-shadow 0.5s ease-in-out;
+}
+
+.footer-scrolled {
+    box-shadow: 0 -5px 7px rgba(0, 0, 0, 0.5);
 }
 
 #inline-share {
