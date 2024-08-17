@@ -3,7 +3,9 @@
     <article>
         <h1>{{ .Title }}</h1>
         <p class="article-info">
-            <img class="profile-img" src="https://avatars.githubusercontent.com/u/{{ .Params.userId }}" /><br/>
+            {{ if .Params.userId }}
+                <img class="profile-img" src="https://avatars.githubusercontent.com/u/{{ .Params.userId }}" /><br/>
+            {{ end }}
             {{ .Date.Format "January 02, 2006" }}<br/>
             Written by {{ .Params.Author }}
         </p>
