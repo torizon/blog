@@ -23,7 +23,10 @@
             <p class="card-description">{{ .Params.Abstract | truncate 200 }}</p>
         </div>
         <div id="last-post-pic">
-            <a href="{{ .Permalink }}"><img src="{{ .Params.Image }}" alt="Card Image"></a>
+            <div id="last-post-pic-back-blur" style="background-image: url('{{ .Params.Image }}');"></div>
+            <a href="{{ .Permalink }}">
+                <img src="{{ .Params.Image }}" alt="Card Image" />
+            </a>
         </div>
         {{ end }}
     </div>
