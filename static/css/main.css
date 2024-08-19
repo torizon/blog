@@ -250,6 +250,11 @@ h6 {
     font-weight: 500;
 }
 
+
+article {
+    padding-left: 0.5rem;
+}
+
 article h1,
 article h2,
 article h3,
@@ -467,8 +472,6 @@ footer {
     }
 
     #article-page {
-        padding: 1rem;
-
         font-size: 16px;
         max-width: 100%;
     }
