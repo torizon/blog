@@ -5,14 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {{ if .Params.Description }}
-    <meta name="description" content="{{ .Params.Description }}">{{ end }}
+    <meta name="description" content="{{ .Params.Description }}">
+    {{ end }}
     {{ if .Params.Author }}
-    <meta name="author" content="{{ .Params.Author }}">{{ end }}
+    <meta name="author" content="{{ .Params.Author }}">
+    {{ end }}
+    {{ partial "meta-og.html" . }}
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="/favicon.png" type="image/png" />
     <title>{{ .Title }}</title>
     <link rel="stylesheet" href="/css/normalize.css">
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/center.css">
     <link rel="stylesheet" href="/css/imgcaption.css">
+    <link rel="stylesheet" href="/css/image-modal.css">
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-B4YDVYDFR4"></script>
@@ -25,9 +31,12 @@
 </head>
 
 <body>
+    {{ partial "image-modal.html" }}
     {{ partial "header.html" . }}
     {{ block "main" . }}{{ end }}
     {{ partial "footer.html" . }}
 </body>
+
+<script src="/js/main.js"></script>
 
 </html>

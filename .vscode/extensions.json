@@ -1,5 +1,6 @@
 {
     "recommendations": [
-        "eliostruyf.vscode-front-matter"
+        "eliostruyf.vscode-front-matter",
+        "microhobby.taskrunnercodeplus"
     ]
 }

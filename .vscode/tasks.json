@@ -1,0 +1,34 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "start-hugo",
+            "detail": "Start the Hugo server to be used as a development server",
+            "hide": false,
+            "command": "docker",
+            "type": "shell",
+            "args": [
+                "run",
+                "--rm",
+                "-it",
+                "-v",
+                "${workspaceFolder}:/src",
+                "-p",
+                "1313:1313",
+                "klakegg/hugo:ext-alpine",
+                "server"
+            ],
+            "problemMatcher": [
+                "$tsc"
+            ],
+            "presentation": {
+                "reveal": "always"
+            },
+            "icon": {
+                "id": "run",
+                "color": "terminal.ansiBlue"
+            },
+            "group": "none"
+        }
+    ]
+}

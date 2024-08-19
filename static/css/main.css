@@ -1,17 +1,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
 
+@font-face {
+    font-family: 'OldPuter';
+    src: url('../fonts/scientificaBold.ttf') format('truetype');
+}
+
 html {
     background-color: rgb(245, 250, 255)
 }
 
 body {
-    font-family: 'Open Sans', sans-serif;
+    /* font-family: 'Open Sans', sans-serif; */
+    font-family: 'Raleway', sans-serif;
+}
+
+header {
+    background-color: #00508d;
 }
 
 nav {
     font-family: 'Courier New', Courier, monospace;
-    background-color: #fff;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    background-color: #00508dc7;
+    backdrop-filter: blur(2px);
+    transition: box-shadow 0.5s ease-in-out;
     position: fixed;
     top: 0;
     left: 0;
@@ -19,15 +30,21 @@ nav {
     z-index: 99999;
 }
 
+.nav-scrolled {
+    box-shadow: 0 5px 7px rgba(0, 0, 0, 0.5);
+}
+
 nav .container {
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 nav ul {
     list-style-type: none;
     flex-grow: 1;
     text-align: right;
+    margin-right: 2rem;
 }
 
 .navbar-logo {
@@ -48,48 +65,47 @@ nav ul li {
 
 nav ul li[selected=true],
 nav ul li:hover {
-    border-bottom: 6px solid #184190;
+    border-bottom: 3px solid #00ff00;
 }
 
 nav ul li a {
-    color: #333;
+    color: #00ff00;
     text-decoration: none;
     transition: text-decoration 0.1s ease;
 }
 
 .github-icon {
     margin-left: 2rem;
+    padding-right: 1rem;
     display: flex;
     align-items: center;
 }
 
 .github-icon .inline-icon svg {
     min-width: 20px;
-    color: #333;
+    color: #00ff00;
 }
 
 #hero {
     min-height: 300px;
-    background-color: #184190;
-    background-image:
-        radial-gradient(at 10% 60%, #5f59d5 0px, transparent 50%),
-        radial-gradient(at 90% 80%, #feb500 0px, transparent 50%),
-        radial-gradient(at 90% 10%, #ffffff 0px, transparent 50%);
+    background-color: #00508d;
     padding-top: 3rem;
     margin-bottom: 3rem;
-    margin-top: 1rem;
     color: #eee;
     font-family: 'Raleway', sans-serif;
     padding-bottom: 2rem;
+    padding-left: 2rem;
 }
 
 #hero h1 {
+    font-family: 'OldPuter';
     font-size: 4rem;
     margin-bottom: 1rem;
 }
 
 #hero p {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
+    font-family: 'Open Sans', sans-serif;
 }
 
 .container {
@@ -111,9 +127,13 @@ select {
 
 #posts {
     margin: 2rem;
-    display: grid;
+    padding-top: 2.5rem;
+    display: flex;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     grid-gap: 20px;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: stretch;
 }
 
 #paginator {
@@ -125,35 +145,46 @@ select {
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 40%;
-    min-width: 500px;
     margin: 1rem 0;
+    max-width: calc(100% - 9rem);
     background-color: #fff;
     position: relative;
-    top: -7rem;
     margin: 0 auto;
-    display: flex;
+    display: block;
 }
 
 #last-post img {
     width: 100%;
     height: 250px;
-    object-fit: cover;
+    object-fit: contain;
+    position: relative;
+    z-index: 2;
 }
 
 #last-post-pic {
     min-width: 40%;
 }
 
+#last-post-pic-back-blur {
+    width: 100%;
+    height: 62%;
+    margin-top: -0.5rem;
+    position: absolute;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    filter: blur(3px);
+    z-index: 1;
+}
+
 #posts-list {
-    margin-top: -7rem;
+    margin-top: -5rem;
 }
 
 .card {
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 30%;
+    max-width: 40%;
     min-width: 300px;
     margin: 1rem 0;
     background-color: #fff;
@@ -166,7 +197,8 @@ select {
 }
 
 .card-content {
-    padding: 0.5rem 1.5rem 1.5rem 1.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 
 .card-title {
@@ -174,6 +206,10 @@ select {
     margin-bottom: 1rem;
     font-size: 1.3rem;
     font-weight: bold;
+}
+
+.title-last-post {
+    font-size: 2.3rem;
 }
 
 .card-title a,
@@ -184,6 +220,13 @@ select {
 
 .card-description {
     margin-bottom: 1rem;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.last-card-description {
+    margin-top: -1rem;
+    margin-bottom: 2rem;
     font-size: 1rem;
     line-height: 1.4;
 }
@@ -205,6 +248,11 @@ select {
 h6 {
     margin: 1.5rem 0 0.5rem 0;
     font-weight: 500;
+}
+
+
+article {
+    padding-left: 0.5rem;
 }
 
 article h1,
@@ -323,17 +371,51 @@ th {
 }
 
 footer {
-    background-color: #333;
+    background-color: #00508db6;
+    backdrop-filter: blur(2px);
     padding: 1rem;
     margin-top: 2rem;
     color: white;
     text-align: center;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    transition: box-shadow 0.5s ease-in-out;
+    z-index: 9999999;
+}
+
+.footer-scrolled {
+    box-shadow: 0 -5px 7px rgba(0, 0, 0, 0.5);
 }
 
 #inline-share {
     text-align: center;
     display: none;
     margin-top: 3rem;
+}
+
+.profile-img {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+}
+
+.card-written-by-author {
+    font-size: 0.7rem;
+}
+
+.card-written-by-profile-img {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 50% !important;
+}
+
+.card-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 100fr;
+    grid-gap: 1rem;
+    align-items: center;
+    margin: 0rem;
 }
 
 @media only screen and (max-width: 600px) {
@@ -360,7 +442,12 @@ footer {
     }
 
     #last-post {
-        display: none;
+        max-width: 100%;
+        margin-top: -2rem;
+    }
+
+    #posts {
+        margin-top: -1rem;
     }
 
     #posts-list {
@@ -385,8 +472,6 @@ footer {
     }
 
     #article-page {
-        padding: 1rem;
-    
         font-size: 16px;
         max-width: 100%;
     }
@@ -397,5 +482,15 @@ footer {
 
     #article-sidebar {
         display: none;
+    }
+}
+
+.blink {
+    animation: blink-animation 1s steps(1, end) infinite;
+}
+
+@keyframes blink-animation {
+    50% {
+        opacity: 0;
     }
 }
