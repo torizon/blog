@@ -18,9 +18,21 @@
         {{ with (index .Pages.ByDate.Reverse 0) }}
         <div class="card-content">
             <p class="card-date">{{ .Date.Format "January 02, 2006" }}</p>
-            {{ if .Params.Series }}<h6>{{ .Params.Series }}</h6>{{ end }}
-            <h4 class="card-title title-last-post"><a href="{{ .Permalink }}">{{ .Title }}</a></h4>
-            <p class="card-description">{{ .Params.Abstract | truncate 200 }}</p>
+            <div class="card-info-grid">
+                {{ if .Params.userId }}
+                <!-- profile img -->
+                <p class="card-written-by">
+                    <img class="card-written-by-profile-img" src="https://avatars.githubusercontent.com/u/{{ .Params.userId }}" />
+                </p>
+                {{ else }}
+                <p></p>
+                {{ end }}
+                <!-- blog info -->
+                {{ if .Params.Series }}<h6>{{ .Params.Series }}</h6>{{ end }}
+                <h4 class="card-title title-last-post"><a href="{{ .Permalink }}">{{ .Title }}</a></h4>
+                <p></p>
+                <p class="last-card-description">{{ .Params.Abstract | truncate 200 }}</p>
+            </div>
         </div>
         <div id="last-post-pic">
             <div id="last-post-pic-back-blur" style="background-image: url('{{ .Params.Image }}');"></div>

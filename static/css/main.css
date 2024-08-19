@@ -194,7 +194,8 @@ select {
 }
 
 .card-content {
-    padding: 0.5rem 1.5rem 1.5rem 1.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 
 .card-title {
@@ -216,6 +217,13 @@ select {
 
 .card-description {
     margin-bottom: 1rem;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.last-card-description {
+    margin-top: -1rem;
+    margin-bottom: 2rem;
     font-size: 1rem;
     line-height: 1.4;
 }
@@ -381,6 +389,24 @@ footer {
     width: 62px;
     height: 62px;
     border-radius: 50%;
+}
+
+.card-written-by-author {
+    font-size: 0.7rem;
+}
+
+.card-written-by-profile-img {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 50% !important;
+}
+
+.card-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 100fr;
+    grid-gap: 1rem;
+    align-items: center;
+    margin: 0rem;
 }
 
 @media only screen and (max-width: 600px) {
