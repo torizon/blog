@@ -16,3 +16,14 @@ window.addEventListener('scroll', () => {
         footer.classList.add('footer-scrolled');
     }
 });
+
+function openGithubProfileFromUserId(id) {
+    fetch('https://api.github.com/user/' + id)
+        .then(response => response.json())
+        .then(data => {
+            var github_user_url = data["html_url"]
+            window.open(github_user_url, "_blank")
+            return false
+        }
+    );
+}

@@ -2,13 +2,19 @@
 <main id="article-page">
     <article>
         <h1>{{ .Title }}</h1>
-        <p class="article-info">
-            {{ if .Params.userId }}
-                <img class="profile-img" src="https://avatars.githubusercontent.com/u/{{ .Params.userId }}" /><br/>
-            {{ end }}
-            {{ .Date.Format "January 02, 2006" }}<br/>
-            Written by {{ .Params.Author }}
-        </p>
+        {{ if .Params.userId }}
+        <a href="#" onclick="openGithubProfileFromUserId('{{ .Params.userId }}')">
+        {{ else }}
+        <a href="#">
+        {{ end }}
+            <p class="article-info">
+                {{ if .Params.userId }}
+                    <img class="profile-img" src="https://avatars.githubusercontent.com/u/{{ .Params.userId }}" /><br/>
+                {{ end }}
+                {{ .Date.Format "January 02, 2006" }}<br/>
+                Written by {{ .Params.Author }}
+            </p>
+        </a>
         <div>{{ .Content }}</div>
         <div id="inline-share">
             <p>SHARE</p>
