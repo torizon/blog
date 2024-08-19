@@ -27,3 +27,29 @@ function openGithubProfileFromUserId(id) {
         }
     );
 }
+
+// Code from: https://gist.github.com/zjeaton/0cdd7e4bed9d292ab6f3d76b0369f16d
+// Open the Modal
+function openModal(clicked_id) {
+    var src = document.getElementById(clicked_id).src;
+    if (src.includes("#")) {
+        src = src.substring(0, src.indexOf( "#" ));
+    };
+    document.getElementById("modalPic").src = src;
+    document.getElementById("myModal").style.display = "block";
+}
+
+// Close the Modal
+function closeModal() {
+    // prevents flashing last modal image while new id is loading on open
+    document.getElementById("modalPic").src = "";
+    document.getElementById("myModal").style.display = "none";
+}
+
+// also close the modal if escape key is pressed
+document.onkeydown = function(evt) {
+    evt = evt || window.event;
+    if (evt.keyCode == 27) {
+        closeModal();
+    }
+};

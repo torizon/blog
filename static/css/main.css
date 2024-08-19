@@ -376,6 +376,7 @@ footer {
     bottom: 0;
     width: 100%;
     transition: box-shadow 0.5s ease-in-out;
+    z-index: 9999999;
 }
 
 .footer-scrolled {

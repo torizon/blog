@@ -13,9 +13,11 @@
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/center.css">
     <link rel="stylesheet" href="/css/imgcaption.css">
+    <link rel="stylesheet" href="/css/image-modal.css">
 </head>
 
 <body>
+    {{ partial "image-modal.html" }}
     {{ partial "header.html" . }}
     {{ block "main" . }}{{ end }}
     {{ partial "footer.html" . }}
