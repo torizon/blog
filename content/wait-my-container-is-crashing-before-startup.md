@@ -2,7 +2,7 @@
 title: Wait! My Container is Crashing Before Startup
 date: 2024-08-08
 author: Leonardo Graboski Veiga, Product Owner Torizon OS
-draft: true
+draft: false
 tags:
     - Container
     - Embedded
