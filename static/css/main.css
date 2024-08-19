@@ -44,6 +44,7 @@ nav ul {
     list-style-type: none;
     flex-grow: 1;
     text-align: right;
+    margin-right: 2rem;
 }
 
 .navbar-logo {
@@ -75,6 +76,7 @@ nav ul li a {
 
 .github-icon {
     margin-left: 2rem;
+    padding-right: 1rem;
     display: flex;
     align-items: center;
 }
@@ -92,6 +94,7 @@ nav ul li a {
     color: #eee;
     font-family: 'Raleway', sans-serif;
     padding-bottom: 2rem;
+    padding-left: 2rem;
 }
 
 #hero h1 {
@@ -433,7 +436,12 @@ footer {
     }
 
     #last-post {
-        display: none;
+        max-width: 100%;
+        margin-top: -2rem;
+    }
+
+    #posts {
+        margin-top: -1rem;
     }
 
     #posts-list {
