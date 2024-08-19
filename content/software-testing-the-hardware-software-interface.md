@@ -8,7 +8,7 @@ tags: ["Testing", "Embedded", "Linux", "Embedded"]
 
 abstract: A series about Embedded Software Testing.
 
-image: /tivoli-waterfalls.png
+image: ./tivoli-waterfalls.png
 ---
 
 This series of blogposts will deal with embedded software testing. I want to pass on to the reader the hard-earned
@@ -169,7 +169,7 @@ if you have many interconnected systems developed by different teams, because it
 There are some strategies such as bottom-up and top-down during the development phase to ensure a smooth integration of
 different systems, and I'll talk more about it in the next parts of this series.
 
-### End-to-end Testing 
+### End-to-end Testing
 
 End-to-end testing - sometimes abbreviated as e2e - makes the black box out of the connection of several integrations.
 Say a software like `nmcli` is used to control the network cards in a connected system and that connection in turn is used
@@ -213,7 +213,7 @@ impact in the system development process.
 
 The good news is that, if you have testing, it is immensily - I can't overstate how much - easier to refactor whole projects.
 When you start refactoring - or adding things to the software - you really see the 'regression protection' testing gives
-you shine. 
+you shine.
 
 Say a customer needs another sensor attached to the equipment. No problem! You write the code for that specific sensor,
 write the tests for that sensor and run the whole test suite: that guarantees that when you added this new sensor, you
@@ -226,9 +226,9 @@ of the system.
 
 ### Release Early, Release Often, Make Returns Early, Make Returns Often
 
-This ties very well together with the "Release early, release often" mentality that is coming to Embedded. 
+This ties very well together with the "Release early, release often" mentality that is coming to Embedded.
 
-Let's say Company A is a developer that buy some Toradex modules, develops and application with Torizon and sells it to 
+Let's say Company A is a developer that buy some Toradex modules, develops and application with Torizon and sells it to
 the Portuguese market.
 
 Turns out Customer B of Company A is actually moving some of these devices to Brazil, where they write Portuguese but

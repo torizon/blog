@@ -8,7 +8,7 @@ tags: ["Debian", "Yocto", "Container", "Embedded"]
 
 abstract: It works until it doesn't.
 
-image: /no-debian-in-my-fleet.png
+image: ./no-debian-in-my-fleet.png
 ---
 
 Quite a few embedded vendors nowadays ship Debian or some derivative by default, specially for the hobbyist sector, but I don't think people realize that there isn't an expectation that Debian will be their *production* operating system, and when with 'production' I don't mean one or two devices: by all means, if that's your scale, continue using Debian in pet machines instead, that's very much fine.
@@ -20,7 +20,7 @@ This is not a ode to tools like buildroot or Yocto, but the available Debian too
 
 ### Debian is not immutable
 Immutability (ie, updates are new snapshots applied on top of a read-only filesystem) is necessary to make sure you have the same revision in the lab as you have in the field, because if you think issues won't show up, they absolutely will. And sending out engineers out into the field or getting some boxes back into the office can be very, very expensive.
-Debian... is not immutable (by default[^0]). 
+Debian... is not immutable (by default[^0]).
 
 So the strategy a lot of people take is: get a 'master', good revision image and use an A/B partition system to switch between revisions. That's generally ok and safe, but it's not very optimized for space. Most immutable distros rely on filesystem tree trackers like ostree, which can be much more efficient (having a single partition is pretty awesome).
 

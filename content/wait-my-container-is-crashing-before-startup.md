@@ -8,7 +8,7 @@ tags:
     - Embedded
     - Linux
 abstract: How to implement container startup sync so that your application doesn't crash due to inter-container communication errors
-image: /concurrent-container-startup.png
+image: ./concurrent-container-startup.png
 ---
 
 When [using more than one container in a project](https://developer.toradex.com/torizon/application-development/working-with-containers/using-multiple-containers-with-torizoncore/), a probable scenario developers are faced with is startup errors due to a lack of inter-container app synchronization.
@@ -281,16 +281,16 @@ services:
 
   app:
     image: influxdb:2.7.5
-  
+
   database:
     image: influxdb:2.7.5
-  
+
   visualization:
     image: grafana/grafana:10.2.3
-  
+
   graphics:
     image: torizon/weston:3.2.2
-  
+
   gui:
     image: torizon/chromium:3.0.2
 ```
@@ -373,19 +373,19 @@ services:
 
   app:
     image: influxdb:2.7.5
-  
+
   database:
     image: influxdb:2.7.5
-  
+
   visualization:
     image: grafana/grafana:10.2.3
-  
+
   graphics:
     image: torizon/weston:3.2.2
     healthcheck:
       test: ["CMD-SHELL", "test", "$$WAYLAND_DISPLAY"]
       start_period: 5s
-  
+
   gui:
     image: torizon/chromium:3.0.2
     depends_on:
@@ -420,19 +420,19 @@ services:
 
   app:
     image: influxdb:2.7.5
-  
+
   database:
     image: influxdb:2.7.5
-  
+
   visualization:
     image: grafana/grafana:10.2.3
-  
+
   graphics:
     image: torizon/weston:3.2.2
     healthcheck:
       test: ["CMD-SHELL", "test", "$$WAYLAND_DISPLAY"]
       start_period: 5s
-  
+
   gui:
     image: torizon/chromium:3.0.2
     depends_on:
