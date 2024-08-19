@@ -1,0 +1,17 @@
+{{ if .Params.title }}
+    <meta property="og:title" content="{{ .Params.title }}" />
+{{ else }}
+    <meta property="og:title" content="Engineering at the Edge" />
+{{ end }}
+{{ if .Params.abstract }}
+    <meta property="og:description" content="{{ .Params.abstract }}" />
+{{ end }}
+{{ if .Params.title }}
+    <meta property="og:type" content="aticle" />
+{{ end }}
+    <meta property="og:url" content="{{ .Permalink }}" />
+{{ if .Params.ogImage }}
+    <meta property="og:image" content="{{ .Params.ogImage }}" />
+{{ else }}
+    <meta property="og:image" content="{{ .Permalink }}img/mainOg.jpg" />
+{{ end }}

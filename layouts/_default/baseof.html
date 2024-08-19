@@ -5,9 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {{ if .Params.Description }}
-    <meta name="description" content="{{ .Params.Description }}">{{ end }}
+    <meta name="description" content="{{ .Params.Description }}">
+    {{ end }}
     {{ if .Params.Author }}
-    <meta name="author" content="{{ .Params.Author }}">{{ end }}
+    <meta name="author" content="{{ .Params.Author }}">
+    {{ end }}
+    {{ partial "meta-og.html" . }}
     <title>{{ .Title }}</title>
     <link rel="stylesheet" href="/css/normalize.css">
     <link rel="stylesheet" href="/css/main.css">
