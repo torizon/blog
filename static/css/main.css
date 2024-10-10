@@ -12,6 +12,11 @@ html {
 body {
     /* font-family: 'Open Sans', sans-serif; */
     font-family: 'Raleway', sans-serif;
+    overflow-x: hidden;
+}
+
+main {
+    min-height: calc(100vh);
 }
 
 header {
@@ -380,6 +385,7 @@ footer {
     bottom: 0;
     transition: box-shadow 0.5s ease-in-out;
     z-index: 9999999;
+    width: 100vw;
 }
 
 .footer-scrolled {
