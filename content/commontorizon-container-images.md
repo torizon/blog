@@ -11,7 +11,7 @@ abstract: "This blog post describe the main differences between the Torizon and 
 
 customCSS: /css/fixedtable.css
 image: /torizon-commontorizon-containers-main.jpg
-ogImage: https://upload.wikimedia.org/wikipedia/commons/f/f6/Container\_Ship.jpg
+ogImage: ../og-castello-torizon-commontorizon-containers.jpg
 ---
 
 Within the Torizon ecosystem we also have Common Torizon. Common Torizon is a community driven derivative work from Torizon open source project. It aims to extend the Torizon ecosystem beyond Toradex SoMs. Therefore, it was also necessary to create container images that were compatible with the hardware that is the target of Common Torizon. This was the **main motivation** for creating the Common Torizon container images.
