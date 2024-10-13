@@ -1,0 +1,4 @@
+/* Apply nowrap to the first column of all tables */
+table td:first-child {
+    white-space: nowrap !important;
+}

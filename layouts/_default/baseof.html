@@ -20,6 +20,10 @@
     <link rel="stylesheet" href="/css/imgcaption.css">
     <link rel="stylesheet" href="/css/image-modal.css">
 
+    {{ if .Params.customCSS }}
+    <link rel="stylesheet" href="{{ .Params.customCSS }}">
+    {{ end }}
+
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-B4YDVYDFR4"></script>
     <script>
