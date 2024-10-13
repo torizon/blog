@@ -426,6 +426,12 @@ code {
     background-color: #16b4f31f;
 }
 
+blockquote {
+    background-color: #ffffff;
+    border-left: 5px solid #ffb411e5;
+    padding: 1rem;
+}
+
 @media only screen and (max-width: 600px) {
     .navbar-logo img {
         height: 50px;
