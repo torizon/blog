@@ -11,7 +11,7 @@
 {{ end }}
     <meta property="og:url" content="{{ .Permalink }}" />
 {{ if .Params.ogImage }}
-    <meta property="og:image" content="{{ .Params.ogImage }}" />
+    <meta property="og:image" content="{{ .Site.BaseURL }}{{ .Params.ogImage }}" />
 {{ else }}
-    <meta property="og:image" content="{{ .Permalink }}img/mainOg.jpg" />
+    <meta property="og:image" content="{{ .Site.BaseURL }}img/mainOg.jpg" />
 {{ end }}
