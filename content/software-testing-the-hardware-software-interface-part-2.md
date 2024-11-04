@@ -12,19 +12,20 @@ image: /soave-gate.jpg
 ---
 
 This is the second installment in the embedded software testing series. This one will be about the architecture of a 
-system to test embedded software. We'll briefly cover the what is usually called a "dual-targetting" approach as well.
+system to test embedded software. I'll give you a practical example of a test for an Embedded Device with integration to
+a CI/CD system. We'll briefly cover what is usually called a "dual-targeting" approach as well.
 
-### Theory
+## Theory
 
-In the previous installment we talked about the different levels of software testing and the last one was "end-to-end
-testing", which is treating the hardware or software Under Test (UDT) like a black box, poking it with a certain stimuli
-(inputs), seeing how it reacts (output) and comparing with a know expected value.
+In the previous installment we talked about the different levels of software testing, and the last one was "end-to-end
+testing", which is treating the Device Under Test (DUT) like a black box, poking it with a certain stimuli
+(inputs), seeing how it reacts (output) and comparing with a known expected value.
 
 So essentially we need something to actually do the poking, watch the outputs and compare with the known good values.
 Practically speaking though, that's hooking up UARTs, displays and whatever else to an embedded system and writing some
 software to do that automatically for us.
 
-```
+```text
 +--------------------+             +-----------------------+
 |                    |             |                       |
 |  Testing Software  |             |   Device Under Test   |
@@ -42,7 +43,9 @@ software to do that automatically for us.
 +--------------------+             +-----------------------+
 ```
 
-### Practice
+## Practice
+
+### A Simple Testing Architecture
 
 So, as an example let's assume you need to monitor whether your Linux box boots. The manual steps to achieve this are:
 
@@ -58,10 +61,10 @@ Integration builds a new OS for the board. Thinking about it in terms of automat
 2. Write some software that parses the logs from the UART
 3. If it detects our login prompt, consider the boart fully booted
 
-As a practical example, I have a Verdin iMX8MP SoM connected to an Dahlia carrier board. Power is connected as is the
+As a practical example, I have a Verdin iMX8MP SoM connected to a Dahlia carrier board. Power is connected as is the
 UART to my Controller, which in this case is my computer.
 
-```
+```text
 +-------------------+          UART Cable          +------------------------+
 |                   | <------------------------->  |                        |
 |   Controller      |                              |  Dahlia Carrier Board  |
@@ -76,10 +79,12 @@ UART to my Controller, which in this case is my computer.
                                                    +------------+
 ```
 
+### Implementation of a Prompting "Expect" in Python
+
 Then it's a matter of writing some software that runs in the controller and waits for the login prompt.
 
 > You can choose whatever language you feel comfortable with writing tests, but I'd highly suggest looking into either
-Python, Perl or Tcl. Interpreted languages, dynamic are generally better for these tasks because you want to chug out
+Python, Perl or Tcl. Interpreted, dynamic languages are generally better for these tasks because you want to chug out
 tests quickly. Also, it makes sense to use a language that is familiar to all in your team.  
 
 Wiping up some Python code I got this:
@@ -139,31 +144,41 @@ The `test_wait_for_PROMPT` is quite simple and can be reutilized many times. The
 data chunks coming from the UART, decoding them and waiting until our desired prompt (`verdin-imx8mp-06817296 login:`)
 shows up.
 
+### Human-readable Test Results
+
 Because this function is encapsulated into a module that calls `unittest.main`, it can output the tests results in a
 standardized format for us, JUnit.xml, which can be interpreted by many other services such as GitLab, GitHub and others.
 
-Another options is using the handy `junit2html` program, which renders the test results as easily digestible HTML pages
+> I recommend setting up some visualization of test results early in the process because as you add tests, you will find
+> yourself digging through logs and other artifacts instead of just glancing at a screen telling you with tests failed and
+> which tests passed. 
+
+Another option is using the handy `junit2html` program, which renders the test results as easily digestible HTML pages
 that can be viewed with a web browser.
 
-{{< figure src="/software-testing-part-2-junit2html.png" title="junit2html result of our automated test" alt="" width="50%" class="centered-figure">}}
+{{< figure src="/software-testing-part-2-junit2html.png" title="junit2html result of our automated test" alt="" width="140%" class="centered-figure">}}
 
+### De-coupling the Controller the Hardware
 
-It might seem like... not a lot, right? But one can easily integrate this further by using `ser2net`, which takes a
-serial output and exposes it as a telnet connection for a distributed testing environment.
+The tests we executed might not seem like... a lot, right? But one can easily integrate this further by using `ser2net`,
+which takes a serial output and exposes it as a telnet connection for a distributed testing environment.
 
 To use `ser2net` I simply installed on my Debian machine using `apt install ser2net` and I'm running manually with
 
-`# ser2net -n -c /etc/ser2net.conf -P /run/ser2net.pid`
+```text
+# ser2net -n -c /etc/ser2net.conf -P /run/ser2net.pid
+```
 
 where `/etc/ser2net.conf` contains the following
 
-`9000:raw:0:/dev/ttyUSB0:115200 8DATABITS NONE 1STOPBIT`.
+```text
+9000:raw:0:/dev/ttyUSB0:115200 8DATABITS NONE 1STOPBIT
+```
 
 With that, from anywhere in the world, I can connect to my Verdin's UART by using telnet. The diagram looks a bit like
 this now:
 
-```
-
+```text
 +-------------------+        TCP/IP Connection         +-------------------+
 |                   | <----------------------------->  |                   |
 |  Testing Software |                                  |    Controller     |
@@ -193,7 +208,7 @@ this now:
 ```
 
 > ser2net will complain about the old configuration format, but I'm not ready to move to YAML yet. You should!
-> ```
+> ```text
 > ser2net:WARNING: Using old config file format, this will go away
 > soon.  Please switch to the yaml-based format.
 > ```
@@ -248,6 +263,8 @@ if __name__ == "__main__":
 
 which yields the same results as before.
 
+### Integration with a CI/CD System
+
 Because the script can run anywhere now, integrating everything within a CI/CD systems should be fairly straight forward.
 Let's do it with Jenkins, which is a popular and mature CI/CD system. For that, I'll write a simple `Jenkinsfile` that
 will execute the tests and parse the results for us:
@@ -296,7 +313,7 @@ pipeline {
 
 Which results in this nice CI job that is testing if our Verdin iMX8MP is properly booting! Cool, right?
 
-{{< figure src="/jenkins-result.png" title="Jenkins Pipeline Stages" alt="" width="100%" class="centered-figure">}}
+{{< figure src="/jenkins-result.png" title="Jenkins Pipeline Stages" alt="" width="130%" class="centered-figure">}}
 
 
 Of course you're free to use CircleCI, GitLab, GitHub whatever other service to do this. But the fact is, if you're
@@ -331,12 +348,12 @@ setup a test where a screenshot is taken from within the board, moved over using
 comparison techniques to evaluate if the image is being rendered properly. Tests are mostly limited by the ingenuity of
 whoever is writing them.
 
-### Dual-Targetting with QEMU
+### Dual-targeting with QEMU
 
-Dual-Targetting is a technique which involves isolating a given layer (generally the application layer) of a system to
+Dual-targeting is a technique which involves isolating a given layer (generally the application layer) of a system to
 develop and test it further within a second target that is not generally the one actually being deployed.
 
-Why do this? Well, testing with hardware in the loop is quite time consuming. Developing evenmoreso. We want
+Why do this? Well, testing with hardware in the loop is quite time consuming. Developing even more so. We want
 fast feedback and today a lot is heavily abstracted between the hardware, OS and application layers, meaning if we're
 developing an application or a non-hardware-bound kernel feature, we could use something better and faster.
 
@@ -349,7 +366,7 @@ the screen. Actually, that's a pretty common thing to do nowadays[^0].
 The whole idea is: "how much can I abstract the hardware away so it's easier for me to test code that only contains
 business logic?".
 
-For Linux, we're well served with QEMU. Double-targetting to QEMU is specially nice because you can run the exact same
+For Linux, we're well served with QEMU. Double-targeting to QEMU is specially nice because you can run the exact same
 kernel in QEMU if you can use an upstream one. Even better if you only care about the application layer: just target
 your Yocto build to a different machine, like `qemuarm64` and you can easily write tests that verify if all the dependencies
 for your application are correctly installed - no need for hardware.
@@ -401,7 +418,7 @@ down the issue to something specific to your hardware, not the build itself, whi
 trouble.
 
 
-### Closing Remarks
+## Closing Remarks
 
 I hope this was useful. This is something that a lot of companies do but not many people talk about, and I'm happy to
 get the information out! Note that in reality, there are whole teams dedicated to this process and maintaining infrastructure
