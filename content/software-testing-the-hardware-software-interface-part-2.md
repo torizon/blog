@@ -79,6 +79,12 @@ UART to my Controller, which in this case is my computer.
                                                    +------------+
 ```
 
+> A note on the "Power Supply": I'll assume here a Power Supply (PSU or sometimes PDU for "Power Delivery Unit") will
+> always be connected to the board. In reality, PSUs used for this kind of application generally have built-in or
+> interface with relays to cut or serve power to devices, and specific software running on the controller is used to
+> control how the PSU behaves (for example, boards must be rebooted, or put into recovery mode etc, this can be done from
+> a PSU).
+
 ### Implementation of a Prompting "Expect" in Python
 
 Then it's a matter of writing some software that runs in the controller and waits for the login prompt.
