@@ -24,6 +24,8 @@
     <link rel="stylesheet" href="{{ .Params.customCSS }}">
     {{ end }}
 
+    <script src="/js/main.js"></script>
+
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-B4YDVYDFR4"></script>
     <script>
@@ -39,8 +41,12 @@
     {{ partial "header.html" . }}
     {{ block "main" . }}{{ end }}
     {{ partial "footer.html" . }}
-</body>
+    <script src="https://unpkg.com/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
 
-<script src="/js/main.js"></script>
+    <script>
+        mediumZoom('img')
+    </script>
+
+</body>
 
 </html>
