@@ -9,12 +9,12 @@ top of the Public Key Infrastructure (PKI) [[ITU-T X.509]](https://www.itu.int/r
 context of software update packages, existing solutions have potential drawbacks and only partially mitigate common
 security risks.
 
-# The problem
+## The problem
 
 The OTA update system is highly automated and can be thought of as the OEM performing remote code execution since a
 remote server on the OEM’s side is, definitionally, determining and directing what software is running on the ECU.
 
-# What is typically used?
+## What is typically used?
 
 The most commonly used method of protecting the integrity and authenticity of an OTA update is by digitally signing the
 software update package. This is called **code signing**. The underlying principle is that the software can be trusted 
@@ -33,7 +33,7 @@ Many rollback protection methods exist today, such as using a release counter in
 one-time writable fuses to increment the counter and act as a one-way ratchet. However, those are not in-band with the
 OTA update system, must be implemented separately, and are limited in scope and expressivity.
 
-# Threats we should be aware of
+## Threats we should be aware of
 
 Based on the above discussion and for the sake of this blog, we can define three threats:
 * T1: Key Compromise
@@ -46,15 +46,15 @@ Based on the above discussion and for the sake of this blog, we can define three
   * Description: An attacker causes an ECU to install a version of software that was previously trusted, but is no
   longer intended to be installed
 
-# What do we do about these threats?
+## What do we do about these threats?
 
 To figure out the optimum solution that caters to all of our threats in our scope, we can build our solution
 step-by-step. We will start from the most basic idea, identify what it protects against and what it doesn't, and then
 build the next layer that addresses the identified limitations.
 
-# Proposed solutions and their analysis
+## Proposed solutions and their analysis
 
-## Solution 1: Simple code signing
+### Solution 1: Simple code signing
 
 We have already discussed simple code signing above. To analyze simple code signing against the threats in our scope,
 1. Simple code signing is trivially vulnerable to key compromise (T1), therefore some external mechanism must be put
@@ -68,7 +68,7 @@ control of the update infrastructure can direct clients to install old software 
 issues that can be further exploited.
 
 
-## Solution 2: Multi-tiered signing authority architecture
+### Solution 2: Multi-tiered signing authority architecture
 
 To address some limitations of simple code signing, a multi-tiered signing system can be employed, which establishes a
 hierarchical public key infrastructure with some number of tiers (typically three tiers). The root Certificate Authority
@@ -91,7 +91,7 @@ of security.
 would not be able to direct the installation of arbitrary malicious software.
 3. However, this system does not inherently provide protection against rollback attacks.
 
-## Solution 3: Role-based signing keys
+### Solution 3: Role-based signing keys
 
 Building on the multi-tiered certificate authority approach, a system with role-based signing keys can help bridge some
 gaps in the previous solution (Solution 2). In this approach, distinct actors assume different roles and sign different
@@ -119,9 +119,8 @@ compromise is not addressed.
 would have to be carefully designed, and this system in its most general form does not directly address rollback
 attacks.
 
+### Solution 4: Role-based Multi-tiered Signing Authority Architecture with Explicit/Implicit Key Revocation - CRLs or OCSP Stapling
 
-## Solution 4: Role-based Multi-tiered Signing Authority Architecture with Explicit/Implicit Key Revocation - CRLs or OCSP Stapling
+### Solution 5: Uptane
 
-## Solution 5: Uptane
-
-# Conclusion
+## Conclusion
