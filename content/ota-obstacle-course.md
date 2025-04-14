@@ -115,12 +115,64 @@ compromise.
 2. The impact of T2 is also reduced, since the existence of multiple roles and signing keys reduces the impact of a
 single key compromise on a server. However, it suffers from the same problems, in that what to do in the case of a key
 compromise is not addressed.
-3. If used in certain, well designed architectures _could_ provide some degree of rollback protection. However, this
-would have to be carefully designed, and this system in its most general form does not directly address rollback
-attacks.
+3. In the minimal rollback protection case, where the vendor needs to prevent a client from installing any older version
+of the software, the above method of using role-based signing with well-designed metadata _could_ provide this basic
+degree of rollback protection. However, this does not cover what is generally needed. For that, a more sophisticated
+system would be required.   
+
+> _Could this be the end of Part 1?_
 
 ### Solution 4: Role-based Multi-tiered Signing Authority Architecture with Explicit/Implicit Key Revocation - CRLs or OCSP Stapling
 
+From the above discussions, a common theme arises - a method to effectively deal with key compromise is required, in
+order to reduce the impact of a key compromise. This is possible by defining explicit methods to rotate or revoke
+signing keys in the system. An important consideration in designing a method for key revocation is that there must be
+some mechanism for the clients to receive information about the revocation of a digital certificate.
+
+In X.509 PKI, there are two main mechanisms for revocation of trust: CRLs and OCSP. A CA revokes a certificate that it
+has issued, i.e., a certificate for some entity one tier below it. Importantly, it is not always specified what should
+happen to certificates issued by a revoked intermediate CA that were issued before the CA’s revocation. There must be
+some policy that addresses this. 
+
+One can conceivably imagine a system outlined in Solution 3 and add an OCSP responder in the system, which will host a
+CRL that will be continually updated by the root CA with revoked certificates. Any entity whose certificate is requested
+can then return an OCSP-stapled response along with its digital certificate. This system effectively combines all the
+previously mentioned solutions and has their advantages, along with the ones mentioned below:
+
+1. The digital certificates in this system can include a certificate expiry time and trigger implicit key
+rotation/revocation, allowing ECUs to verify the freshness of the software update package’s information and integrity
+checks.
+2. Information about the keys and the image signing metadata can be separate, providing further separation of duties,
+which isolates image integrity checks if keys are modified or rotated. This isolation reduces the load of key rotation
+with respect to recomputing software image hashes for signing.
+3. The temporal validity of a certificate provides a certain level of rollback protection, but does not completely
+protect against it. Revoking the certificate attesting to a particular software version may cause problems for some
+older devices which require that update.
+4. Allows for key/certificate rotation and revocation through CRLs and OCSP stapling-like implementations.
+
+The issue with using these methods for software updates is that solutions such as OCSP have been designed in the context
+of TLS, where it is almost always guaranteed that there is real-time communication between the client and the server.
+This exact system may not be applicable for the contexts of code signing and OTA update delivery, since code signature
+generation and the subsequent communication between the client and the server happen at _different times_ (they could be
+hours, days, or even weeks apart).
+
+Comparing against the threat model in our scope, 
+1. The impact of a signing key compromise (T1) is low due to a method to revoke trust in a set of keys.
+2. The impact of a server key compromise (T2) is low due to  a method to revoke trust in a set of keys.
+3. The impact of a rollback attack (T3) is moderate as revocation of signing keys for an older version of a software
+could prevent old devices from upgrading from their older software version to this old version.
+
+This is the closest we have gotten to an optimal solution. However, we need to address some gaps:
+1. Frequent key rotation could potentially create a key management problem with a large amount of keys to maintain.
+2. CRLs and OCSP servers are not built into the basic implementation of the PKI system for code signing. This reliance on an out-of-band mechanism for key management could introduce additional system complexities and vulnerabilities that malicious actors can potentially exploit.
+3. Lightweight OCSP stapling for high volume environments [RFC 5019](https://datatracker.ietf.org/doc/draft-ietf-lamps-rfc5019bis/) in the context of OTA updates cannot directly be implemented, due to the lack of a public standard, which can lead to design inconsistencies and unchecked vulnerabilities.
+
+With some fundamental tweaks, it is possible to build a system that combines the advantages of using separation of
+duties, detached combined signatures and explicit key revocation techniques and address the challenges described in this
+blog.
+
 ### Solution 5: Uptane
+
+
 
 ## Conclusion
