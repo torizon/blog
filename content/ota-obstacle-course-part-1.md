@@ -1,4 +1,4 @@
-# OTA Obstacle Course: Automotive Update Solutions vs Key Security Challenges
+# OTA Obstacle Course: Automotive Update Solutions vs Key Security Challenges: Part 1
 
 Over-The-Air (OTA) software updates often contain crucial security features, and are thus critical for ensuring the
 safety of a device. OTA updates have an added complexity due to the vast network an update has to traverse before
@@ -164,15 +164,17 @@ could prevent old devices from upgrading from their older software version to th
 
 This is the closest we have gotten to an optimal solution. However, we need to address some gaps:
 1. Frequent key rotation could potentially create a key management problem with a large amount of keys to maintain.
-2. CRLs and OCSP servers are not built into the basic implementation of the PKI system for code signing. This reliance on an out-of-band mechanism for key management could introduce additional system complexities and vulnerabilities that malicious actors can potentially exploit.
-3. Lightweight OCSP stapling for high volume environments [RFC 5019](https://datatracker.ietf.org/doc/draft-ietf-lamps-rfc5019bis/) in the context of OTA updates cannot directly be implemented, due to the lack of a public standard, which can lead to design inconsistencies and unchecked vulnerabilities.
+2. CRLs and OCSP servers are not built into the basic implementation of the PKI system for code signing. This reliance
+on an out-of-band mechanism for key management could introduce additional system complexities and vulnerabilities that
+malicious actors can potentially exploit.
+3. Lightweight OCSP stapling for high volume environments
+[RFC 5019](https://datatracker.ietf.org/doc/draft-ietf-lamps-rfc5019bis/) in the context of OTA updates cannot directly
+be implemented, due to the lack of a public standard, which can lead to design inconsistencies and unchecked
+vulnerabilities.
+
+## Conclusion
 
 With some fundamental tweaks, it is possible to build a system that combines the advantages of using separation of
 duties, detached combined signatures and explicit key revocation techniques and address the challenges described in this
-blog.
-
-### Solution 5: Uptane
-
-
-
-## Conclusion
+blog. In Part 2, we will explore the ideal solution, which already exists, and is implemented by Toradex as part of the
+Torizon OS update system and Torizon Cloud.
