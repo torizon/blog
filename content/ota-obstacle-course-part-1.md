@@ -1,41 +1,46 @@
 # OTA Obstacle Course: Automotive Update Solutions vs Key Security Challenges: Part 1
 
-Over-The-Air (OTA) software updates often contain crucial security features, and are thus critical for ensuring the
-safety of a device. OTA updates have an added complexity due to the vast network an update has to traverse before
-reaching the intended device. Thus, ensuring the security of the delivery of these updates is paramount.
+Software updates often contain crucial security fixes, and are thus critical for ensuring the
+safety of a device. OTA (Over-The-Air) updates have an added complexity due to vast public networks update packages have
+to traverse before reaching the intended device. Ensuring the security of the delivery of these updates is paramount.
 
-Existing update implementations in the automotive industry often rely on authentication and signature methods built on
-top of the Public Key Infrastructure (PKI) [[ITU-T X.509]](https://www.itu.int/rec/T-REC-X.509-202410-P!Amd1). In the
-context of software update packages, existing solutions have potential drawbacks and only partially mitigate common
-security risks.
+Existing software update implementations in the industry often rely on authentication and signature methods built on
+top of the Public Key Infrastructure (PKI) [[ITU-T X.509]](https://www.itu.int/rec/T-REC-X.509-202410-P!Amd1). While these methods are effective in their intended
+use-cases, in the context of software update packages, they have potential drawbacks and only _partially_ mitigate
+common security risks.
 
 ## The problem
 
 The OTA update system is highly automated and can be thought of as the OEM performing remote code execution since a
-remote server on the OEM’s side is, definitionally, determining and directing what software is running on the ECU.
+remote server on the OEM’s side is, definitionally, determining and directing what software is running on the ECU. This
+means that unless we can verify with absolute authority that the entity we are receiving the update from really is the
+OEM, and that the update we are receiving is the intended update, we cannot be sure that the received update is safe.
 
 ## What is typically used?
 
 The most commonly used method of protecting the integrity and authenticity of an OTA update is by digitally signing the
 software update package. This is called **code signing**. The underlying principle is that the software can be trusted 
-if the client can verify that the update package is untampered with and has been cryptographically signed by the correct
-author. This is quite useful, and is widely used, but does not protect against some threats important to the overall
-threat landscape against software update systems. A major drawback of simple code signing is that it does not protect
-against rollback attacks; the client will consider a software update package as valid as long as its signature can be
-verified.
+if the client can verify that the update package is not tampered with and has been cryptographically signed by the
+correct author. This is quite useful, and is widely used, but does not protect against some threats important to the
+overall threat landscape against software update systems. A major drawback of simple code signing is that it does not
+protect against rollback attacks; the client will consider a software update package as valid as long as its signature
+can be verified.
 
 This is a major issue as the longer a software version is out there, more vulnerabilities keep getting discovered in it.
-This can be summed up as “sufficiently old software is indistinguishable from malware.”
+The problem can be summed up as “sufficiently old software is indistinguishable from malware.”
 
-Preventing a system from installing a previously valid software version is similar to revocation of trust.
+Preventing a system from installing a previously valid software version (rolling back) is similar to revocation of trust.
 
-Many rollback protection methods exist today, such as using a release counter in firmware and use RPMB storage or
+Many rollback protection methods exist today, such as using a release counter in firmware and using RPMB storage or
 one-time writable fuses to increment the counter and act as a one-way ratchet. However, those are not in-band with the
 OTA update system, must be implemented separately, and are limited in scope and expressivity.
 
 ## Threats we should be aware of
 
-Based on the above discussion and for the sake of this blog, we can define three threats:
+Code signing and OTA update distribution involves the use of cryptographic keys and signatures, and a distribution
+service for actually issuing the updates to different clients. 
+
+For the entities described above, for the scope of this blog, we can define the following three threats:
 * T1: Key Compromise
   * Description: An attacker gains possession of the private key used for signing software updates.
 * T2: Distribution Service Compromise
@@ -67,24 +72,23 @@ vehicle.
 control of the update infrastructure can direct clients to install old software versions that may have other security
 issues that can be further exploited.
 
-
 ### Solution 2: Multi-tiered signing authority architecture
 
-To address some limitations of simple code signing, a multi-tiered signing system can be employed, which establishes a
-hierarchical public key infrastructure with some number of tiers (typically three tiers). The root Certificate Authority
+To address some limitations of simple code signing, we can imagine a multi-tiered signing system which establishes a
+hierarchical public key infrastructure with some number of tiers (typically three). The root Certificate Authority
 (root CA) serves as the trust anchor, and cryptographically signs (i.e. “issues”) the certificates of intermediate CAs.
 These intermediate CAs can then issue a third tier of certificates, to be used to sign the actual software update
 packages. Each certificate authority issues the certificates of the ones in the tier below it, creating a "chain of
 trust" that ensures the integrity and authenticity of software updates, verifiable by the individual ECUs as long as
 they have the root CA in their trust store.
 
-You may think, "Why is this better than code signing? It is essentially the same as signing a piece of software!" This
+You may think, "Why is this better than code signing? Isn't it essentially the same as signing a piece of software?" This
 system is better than simple code signing because it allows for the _delegation_ of signing responsibilities to various
 vendors across different business relationships. Furthermore, a hierarchical structure also allows for varying levels of
-security for the keys used for cryptographically signing the code. This means the root tier keys can be stored offline
-to minimize the risk of compromise.
+security for the keys used for signing the code. This means the root tier keys can be stored offline to minimize the 
+risk of compromise.
 
-Analyzing against our scope of threats:
+Let's analyze this system against our threats:
 1. The impact of T1 is **reduced** due to the ability to use different keys for different entities with varying levels
 of security.
 2. The threat of T2 is also slightly **reduced**. An attacker in control of the update server but not the signing key(s)
@@ -94,15 +98,19 @@ would not be able to direct the installation of arbitrary malicious software.
 ### Solution 3: Role-based signing keys
 
 Building on the multi-tiered certificate authority approach, a system with role-based signing keys can help bridge some
-gaps in the previous solution (Solution 2). In this approach, distinct actors assume different roles and sign different
-artifacts. For instance, an architecture could include separate CAs responsible for issuing certificates for signing
-software update packages intended for different subsystems of the vehicle. Actors are not trusted to do anything outside
-of their role definition.
+gaps in the previous solution. In this approach, distinct actors assume different roles and sign different artifacts.
+For instance, an architecture could include separate CAs responsible for issuing certificates for signing software
+update packages intended for different subsystems of the vehicle. Actors are not trusted to do anything outside of their
+role definition.
 
-Another example implementation of a role-based multi-tiered CA architecture may designate separate keys for signing the
+This may be confusing, as the previous solution also points to the idea that different CAs in different hierarchies can
+assume different responsibilities. The approach of using role-based signing keys allows different entities _at the same
+level_ to assume different roles.
+
+Another example implementation of a role-based multi-tiered CA architecture may designate separate keys for signing a
 manifest — which contains metadata about all software update images involved in the OTA update — and the actual software
-update images. The nature of separating the manifest and update images also uses a type of code signing called detached
-combined signatures. In _detached combined_ signatures, the metadata and signatures about all software update images in
+update images. The nature of separating the manifest and update images also uses a type of code signing called _detached
+combined signatures_. In detached combined signatures, the metadata and signatures about all software update images in
 the package is stored in a signed metadata file that is separate from the update images. There can be multiple signers
 for each metadata file and there exists one file per signer.
 
@@ -117,20 +125,22 @@ single key compromise on a server. However, it suffers from the same problems, i
 compromise is not addressed.
 3. In the minimal rollback protection case, where the vendor needs to prevent a client from installing any older version
 of the software, the above method of using role-based signing with well-designed metadata _could_ provide this basic
-degree of rollback protection. However, this does not cover what is generally needed. For that, a more sophisticated
-system would be required.   
+degree of rollback protection. However, this does not cover what is generally needed. We ideally require a method that
+also allows/prevents rolling back to a _specific_ version of a software. For that, a more sophisticated system would be
+required.
 
 > _Could this be the end of Part 1?_
 
 ### Solution 4: Role-based Multi-tiered Signing Authority Architecture with Explicit/Implicit Key Revocation - CRLs or OCSP Stapling
 
-From the above discussions, a common theme arises - a method to effectively deal with key compromise is required, in
-order to reduce the impact of a key compromise. This is possible by defining explicit methods to rotate or revoke
-signing keys in the system. An important consideration in designing a method for key revocation is that there must be
-some mechanism for the clients to receive information about the revocation of a digital certificate.
+From the above discussions and analyses against our threat model, we see a common theme - a method to effectively deal
+with key compromise is required to reduce the impact of a key compromise. This is possible by defining explicit methods
+to rotate or revoke signing keys in the system. An important consideration in designing a method for key revocation is
+that there must be some mechanism for the clients to receive information about the revocation of a digital certificate.
 
-In X.509 PKI, there are two main mechanisms for revocation of trust: CRLs and OCSP. A CA revokes a certificate that it
-has issued, i.e., a certificate for some entity one tier below it. Importantly, it is not always specified what should
+In X.509 PKI, there are two main mechanisms for revocation of trust: [CRLs](https://en.wikipedia.org/wiki/Certificate_revocation_list)
+and [OCSP](https://en.wikipedia.org/wiki/Online_Certificate_Status_Protocol). A CA revokes a certificate that it has
+issued, i.e., a certificate for some entity one tier below it. Importantly, it is not always specified what should
 happen to certificates issued by a revoked intermediate CA that were issued before the CA’s revocation. There must be
 some policy that addresses this. 
 
@@ -156,7 +166,7 @@ This exact system may not be applicable for the contexts of code signing and OTA
 generation and the subsequent communication between the client and the server happen at _different times_ (they could be
 hours, days, or even weeks apart).
 
-Comparing against the threat model in our scope, 
+Analyzing against the threat model in our scope, 
 1. The impact of a signing key compromise (T1) is low due to a method to revoke trust in a set of keys.
 2. The impact of a server key compromise (T2) is low due to  a method to revoke trust in a set of keys.
 3. The impact of a rollback attack (T3) is moderate as revocation of signing keys for an older version of a software
