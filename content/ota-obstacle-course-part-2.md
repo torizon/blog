@@ -33,26 +33,26 @@ Uptane’s architecture can be described as having role-based functional separat
 ECUs. Each “role” in Uptane is responsible for generating and signing different kinds of software update metadata. They
 are summarized below:
 * **The Root Role**: Responsible for generating and signing the Root metadata, which consists of the mapping between all
-four roles and their public keys. This activity establishes the root of trust [US NIST Online Glossary] in the software
-update system, and can be considered as analogous to a certificate authority in X.509.
-* **The Targets Role**: Responsible for generating and signing the Targets metadata, which consists of information about all
-software update bundles. This metadata ensures the integrity of the contents of the actual update package. This metadata
-is separate from the artefacts, and contains combined information about all the artefacts that are valid targets for
-installation. Multiple targets roles can exist on a repository, with a hierarchical relationship, allowing a single
-repository to contain software attested by different actors. The top-level Targets role on the Image repository can
-delegate the responsibility of signing metadata to other targets roles, and can restrict the signing authority of
+four roles and their public keys. This activity establishes the root of trust [US NIST Online Glossary](https://csrc.nist.gov/glossary/term/roots_of_trust)
+in the software update system, and can be considered as analogous to a certificate authority in X.509.
+* **The Targets Role**: Responsible for generating and signing the Targets metadata, which consists of information about
+all software update bundles. This metadata ensures the integrity of the contents of the actual update package. This
+metadata is separate from the artefacts, and contains combined information about all the artefacts that are valid
+targets for installation. Multiple targets roles can exist on a repository, with a hierarchical relationship, allowing a
+single repository to contain software attested by different actors. The top-level Targets role on the Image repository
+can delegate the responsibility of signing metadata to other targets roles, and can restrict the signing authority of
 delegatees to specific subsets of packages or ECUs.
-* **The Snapshot Role**: Responsible for generating and signing the Snapshot metadata, which consists of information about
-each Targets metadata file. This metadata ensures the consistency of the repository.
-* **The Timestamp Role**: Responsible for generating and signing the Timestamp metadata, which contains information about
-the latest Snapshot metadata on the Image repository. This metadata ensures the timeliness of the software update
+* **The Snapshot Role**: Responsible for generating and signing the Snapshot metadata, which consists of information 
+about each Targets metadata file. This metadata ensures the consistency of the repository.
+* **The Timestamp Role**: Responsible for generating and signing the Timestamp metadata, which contains information
+about the latest Snapshot metadata on the Image repository. This metadata ensures the timeliness of the software update
 operations. It typically has a short expiry period, but is very small, containing a single hash of the snapshot
 metadata. It also ensures that the most common happy-path operation is efficient; update checks where everything is
 already up to date need only verify the timestamp metadata.
 
 An important architectural element in Uptane is the separation of the Image repository and Director repository. These
-two repositories support the services that devices communicate with to get software update packages. These two
-repositories perform different functions using the four roles (outlined above) that are implemented on them.
+two repositories support the services that devices communicate with to get software update packages and perform different
+functions using the four roles (outlined above) that are implemented on them.
 
 * The Image repository has the signed software update packages and their associated signed Uptane metadata (root,
 timestamp, snapshot, and targets). This repository acts as the source of ground truth about all software that is
