@@ -1,3 +1,16 @@
+---
+title: "OTA Obstacle Course: Automotive Update Solutions vs Key Security Challenges: Part 2"
+date: 2025-04-29
+author: Yashovardhan Bapat, Product Cybersecurity Intern
+draft: false
+
+tags: ["Security", "Embedded", "Linux", "Uptane"]
+
+abstract: Why Uptane is a more secure method of OTA software update delivery.
+
+image: /TODO-add-image.jpg
+---
+
 # OTA Obstacle Course: Automotive Update Solutions vs Key Security Challenges: Part 2
 
 In Part 1, we discussed the different ways a secure OTA software update system could be built in a way that provides
