@@ -11,17 +11,17 @@ abstract: Getting the most out of Torizon Cloud and Uptane
 image: /TODO-add-image.jpg
 ---
 
-Sometimes, when using security tools, there's a gap between what you can do in principle, and what you can do in practice. This blog post is about my experience going zero-trust with my Torizon Cloud repository, the obstacles I faced along the way, and how to actually get everything working.
+Sometimes, when using security tools, there's a gap between what you can do in principle, and what you can do in practice. This blog post is about my experience going zero-trust with my Torizon Cloud repository, the obstacles I faced along the way, and how I actually got everything working.
 
 ## Overview
 
 I'm a cybersecurity intern at Toradex. I've worked on TUF and Uptane during a residence at NYU Tandon in the Secure Systems Lab earlier, but that was only theoretical. Working at Toradex was my first interaction with a real-world Uptane implementation - so I thought I would see how it was to take an Uptane repository in Torizon, with online keys in Toradex custody, and update it so that the signing keys are completely offline, and stored on secure hardware where the actual private keys are completely impossible to extract.
 
-This is a good thing to do once you're in production and your release cadence slows down. Imagine if you have 10,000 devices in the field, and your Torizon Cloud account gets compromised. (Of course, we always hope that doesn't happen. But sometimes employees get phished, or API keys get leaked. Or maybe someone just leaves a post-it note with credentials near their computer, and it [makes it into a TV interview](https://www.independent.co.uk/tech/tv5monde-hack-staff-accidentally-show-passwords-in-report-about-huge-cyberattack-10168475.html).) If your software signing keys are still online and a malicious user gains access to the repository, they could upload whatever software they wanted, and then send the update out to all your devices around the world. Secure hardware-bound keys help protect against this situation. But they can also be a bit difficult to use at first, if you don't know what you're doing.
+This is a good thing to do once you're in production and your release cadence slows down. Imagine if you have 10,000 devices in the field, and your Torizon Cloud account gets compromised. (Of course, we always hope that doesn't happen. But sometimes employees get phished, or API keys get leaked. Or maybe someone just leaves a post-it note with credentials near their computer, and it [makes it into a TV interview](https://www.independent.co.uk/tech/tv5monde-hack-staff-accidentally-show-passwords-in-report-about-huge-cyberattack-10168475.html).) If a malicious user gains access to the repository and your software signing keys are still online, the malicious actor could upload whatever software they wanted, and then send the update out to all your devices around the world. Secure hardware-bound keys protect us from the consequences of such a situation. But they can also be a bit difficult to use at first, if you don't know what you're doing.
 
 We already document [how to take your keys offline](https://developer.toradex.com/torizon/torizon-platform/torizon-updates/offline-signing-keys/). But I saw and wanted to explore the section on [Hardware Security Modules](https://developer.toradex.com/torizon/torizon-platform/torizon-updates/offline-signing-keys/#hardware-security-modules). I've got a Yubikey, so I thought I'd try it out.
 
-It wasn't quite as easy as I'd hoped, so I wanted to document the process for posterity. Read on for the details, or [skip to the TLDR](#tldr) if you just want the step-by-step commands.
+The whole process wasn't quite as easy as I'd hoped, so I wanted to document the process for posterity. Read on for the details, or [skip to the TLDR](#tldr) if you just want the step-by-step commands.
 
 ## The Process
 
@@ -31,7 +31,7 @@ The Toradex OTA client supports RSASSA-PSS and ED25519 signatures. My Yubikey su
 2. Add the public key to my Torizon Cloud repo.
 3. Follow all the same steps in the developer doc, but add the signature using my Yubikey instead of using OpenSSL with a private key stored in a file.
 
-The section in the Toradex Developer docs on using [Offline Signing Keys](https://developer.toradex.com/torizon/torizon-platform/torizon-updates/offline-signing-keys/) explains what should be done to take your keys offline and use them to carry out actions related to Torizon Cloud and OTA updates. Since Torizon Cloud is standards-compliant, we can use the official [Uptane CLI tool] (https://github.com/uptane/ota-tuf/releases/latest) for all of our interactions with the repository. The basic steps for taking your repository offline go something like this:
+The section in the Toradex Developer docs on using [Offline Signing Keys](https://developer.toradex.com/torizon/torizon-platform/torizon-updates/offline-signing-keys/) explains what should be done to take your keys offline and use them to carry out actions related to Torizon Cloud and OTA updates. Since Torizon Cloud is standards-compliant, we can use the official [Uptane CLI tool](https://github.com/uptane/ota-tuf/releases/latest) for all of our interactions with the repository. The basic steps for taking your repository offline go something like this:
 
 1. Create a local Uptane metadata repository: `$ uptane-sign init --repo myimagerepo --credentials /path/to/credentials.zip`
 2. Generate/import new signing keys: 
@@ -44,9 +44,9 @@ The section in the Toradex Developer docs on using [Offline Signing Keys](https:
 
 The uptane-sign tool has a lot of functionality, but the basic idea of it is that you clone the repository _metadata_ to your local system, make changes, sign it, and then upload it back to Torizon Cloud. The design has some advantages, including the fact that you can do all of your _signing_ in a completely clean room, with zero internet connection.
 
-However, now things start to get tricky. So far, we've managed to bring the repository offline. We don't know yet how
-to use the Yubikey along with these keys. The documentation mentions consulting `$ uptane-sign --help`, but that is not
-exactly very helpful. Let's see what we can do. 
+So far, we've managed to bring the repository offline. However, now things start to get tricky. We don't know yet how
+to use the Yubikey along with these keys. The documentation mentions consulting `$ uptane-sign --help`, which,
+unfortunately is not very helpful and requires some digging. Let's see what we can do. 
 
 ## Yubikey 101
 
