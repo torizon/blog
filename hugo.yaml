@@ -4,7 +4,7 @@ CanonifyURLs: true
 
 languageCode: en-us
 title: Engineering at the Edge
-paginate: 6
+pagination.pagerSize: 6
 
 params:
   tags: [Linux, Embedded, Container, Security, Performance, Container, IoT, Over-the-Air, Machine Learning, GUI]
