@@ -1,6 +1,6 @@
 ---
 title: "Hardening the software supply chain with a Yubikey: Torizon Cloud updates with zero trust and offline keys"
-date: 2025-04-29
+date: 2025-05-14
 author: Yashovardhan Bapat, Product Cybersecurity Intern
 draft: false
 
@@ -33,15 +33,25 @@ The Toradex OTA client supports RSASSA-PSS and ED25519 signatures. My Yubikey su
 
 The section in the Toradex Developer docs on using [Offline Signing Keys](https://developer.toradex.com/torizon/torizon-platform/torizon-updates/offline-signing-keys/) explains what should be done to take your keys offline and use them to carry out actions related to Torizon Cloud and OTA updates. Since Torizon Cloud is standards-compliant, we can use the official [Uptane CLI tool](https://github.com/uptane/ota-tuf/releases/latest) for all of our interactions with the repository. The basic steps for taking your repository offline go something like this:
 
-1. Create a local Uptane metadata repository: `$ uptane-sign init --repo myimagerepo --credentials /path/to/credentials.zip`
+1. Create a local Uptane metadata repository: 
+```shell
+$ uptane-sign init --repo myimagerepo --credentials /path/to/credentials.zip
+```
 2. Generate/import new signing keys: 
-   * `$ uptane-sign key generate --repo myimagerepo --name myroot --type ed25519`
-   * `$ uptane-sign key generate --repo myimagerepo --name mytargets --type ed25519`
-3. Perform the key rotation: `$ uptane-sign move-offline --repo myimagerepo --old-root-alias origroot --new-root myroot --new-targets mytargets`
-   * Be careful to store your original root keys. Once you run this command, those keys will be wiped from the Torizon
-   Cloud server and if you delete them locally as well, they cannot be recovered.
-4. Pull the metadata from the Torizon cloud repository to local repository: `$ uptane-sign targets pull --repo myimagerepo`
+```shell
+$ uptane-sign key generate --repo myimagerepo --name myroot --type ed25519
+$ uptane-sign key generate --repo myimagerepo --name mytargets --type ed25519
+```
+3. Perform the key rotation: 
+```shell
+$ uptane-sign move-offline --repo myimagerepo --old-root-alias origroot --new-root myroot --new-targets mytargets
+```
+* Be careful to store your new root keys. Once you run this command, the online keys will be wiped from the Torizon Cloud server, and only your new key (`myroot`) will be valid.
 
+4. Pull the metadata from the Torizon cloud repository to local repository: 
+```shell
+$ uptane-sign targets pull --repo myimagerepo
+```
 The uptane-sign tool has a lot of functionality, but the basic idea of it is that you clone the repository _metadata_ to your local system, make changes, sign it, and then upload it back to Torizon Cloud. The design has some advantages, including the fact that you can do all of your _signing_ in a completely clean room, with zero internet connection.
 
 So far, we've managed to bring the repository offline. However, now things start to get tricky. We don't know yet how
@@ -66,16 +76,24 @@ For generating the keys using my Yubikey, I used the PIV tool made by Yubico, ca
 using package managers like Homebrew or by simply cloning the source repository and building it. 
 
 The steps for key generation are:
-1. `$ yubico-piv-tool -a generate -s 9c -A ED25519 -k -o uptane-signing-key-ed25519.pem`
-2. `$ yubico-piv-tool -a verify-pin -a selfsign -s 9c -S '/CN=piv_auth/OU=test/O=example.com/' -i uptane-signing-key-ed25519.pem`
-    This will generate and print a self-signed certificate to stdout. Copy this certificate (including the headers) for 
-    the next step.
-3. `$ yubico-piv-tool -a import-certificate -s 9c -k`
-    This will prompt you to paste/enter the certificate contents so that it can be safely imported in the slot.
 
-Great! Now that the ED25519 key is properly set up and the certificate has been imported in slot 9c, we need to add
-this key information to our TUF repository. TUF defines a specific way of storing key information, and luckily for us,
-uptane-sign provides the functionality to do that automatically.
+1. Generate a new key in the slot we chose:
+```shell
+$ yubico-piv-tool -a generate -s 9c -A ED25519 -k -o uptane-signing-key-ed25519.pem
+```
+2. Self-sign an X.509 cert for the key we just generated. Certificates aren't actually required for Uptane, since the key validity information is entirely **in-band**, via the root metadata. However, other Yubico software expects keys to be associated with a cert, so we generate one and self-sign it.
+```shell
+$ yubico-piv-tool -a verify-pin -a selfsign -s 9c -S '/CN=piv_auth/OU=test/O=example.com/' -i uptane-signing-key-ed25519.pem
+```
+Copy the results of this command; you'll need it in the next step.
+
+3. Import the cert we generated back into the Yubikey:
+```shell
+$ yubico-piv-tool -a import-certificate -s 9c -k
+```
+This will prompt you to paste/enter the certificate contents so that it can be safely imported in the slot.
+
+Great! Now that the ED25519 key is properly set up and the certificate has been imported in slot 9c, we need to add this key information to our TUF repository. TUF defines a specific way of storing key information, and luckily for us, uptane-sign provides the functionality to do that automatically.
 
 To add the public key associated with slot 9c on our Yubikey (let's call it uptane-signing-key-ed25519), run:
 
@@ -96,30 +114,33 @@ This will store the key in our local copy of the repository metadata, with the f
 
 Once this key is imported into the repository, we must add it as a key that is authorized to sign Targets metadata. This
 includes changing root metadata, signing the updated root metadata and pushing it to the Torizon Cloud server.
-We can do this through uptane-sign by running:
-1. `$ uptane-sign root targets-key add -k uptane-signing-key-ed25519 --repo myimagerepo`
-2. `$ uptane-sign root sign -k origroot --repo myimagerepo` (`origroot` is the registered root on the server currently. After we push the new root metadata, we should use `myroot`.) 
-3. `$ uptane-sign root push --repo myimagerepo`
+We can do this through uptane-sign.
+1. Add our new key to the root metadata, as a targets signing key:
+```shell
+$ uptane-sign root targets-key add -k uptane-signing-key-ed25519 --repo myimagerepo
+```
+2. Sign the changed root metadata:
+```shell
+$ uptane-sign root sign -k myroot --repo myimagerepo
+```
+3. Push the signed root metadata to Torizon Cloud:
+```shell
+$ uptane-sign root push --repo myimagerepo
+```
 
-Now, the Torizon Cloud server is up-to-date with knowledge of the new key authorized to sign targets metadata, and of
-the new root key (myroot).
+Now, the Torizon Cloud server is up-to-date with knowledge of the new key authorized to sign targets metadata, and of the new root key (`myroot`).
 
-An important part of signing in Uptane is monotonically increasing the version number of the metadata file. This step
-helps ensure protection against rollback attacks. We can increment the targets metadata version number by running:
+An important part of signing in Uptane is monotonically increasing the version number of the metadata file. This step helps ensure protection against rollback attacks. When you change the content of metadata with `uptane-sign`, it automatically increments the version number. But because we're only changing the signing key, with no content changes, we need to explicitly increment the targets metadata version number:
 
-`$ uptane-sign targets increment-version --repo myimagerepo` 
+```shell
+$ uptane-sign targets increment-version --repo myimagerepo
+```
 
 Do not forget to do this before signing, as the server will reject targets metadata with equal version numbers.
-Uptane-sign does this automatically when we sign our metadata through it natively, but since we are adding this
-signature externally, we have to remember to do it manually. 
 
-Signing the data is possible through the yubico-piv-tool itself. However, there is one step we should do _before_
-signing. We have to **canonicalize** our target JSON before signing. This is because uptane-sign canonicalizes the JSON
-object to ensure consistency before signing. The "canonical JSON" format is designed to provide repeatable hashes of
-JSON-encoded data. Thus, if we forget to do this, our signature will never get verified successfully! We will,
-effectively, be attempting to verify the contents of two _different_ files (canonicalized vs not).
+Signing the data is possible through the yubico-piv-tool itself. However, there is one more step we need to do _before_ signing. We have to **canonicalize** our target JSON before signing. This is because uptane-sign canonicalizes the JSON object to ensure consistency before signing. The [canonical JSON](https://gibson042.github.io/canonicaljson-spec/) format is designed to provide repeatable hashes of JSON-encoded data. Thus, if we forget to do this, our signature will never get verified successfully! We will, effectively, be attempting to verify the contents of two _different_ files (canonicalized vs not).
 
-Fortunately, uptane-sign has a convenience function for canonicalizing our metadata: `uptane-sign targets get-unsigned`. This command was designed to work in with external signing tools, and simply outputs the canonicalized metadata to stdout. We'll save it to a file, since we're working step-by-step:
+Fortunately, uptane-sign has a convenience function for canonicalizing our metadata: `uptane-sign targets get-unsigned`. This command was designed to work with external signing methods like the Yubikey, and simply outputs the canonicalized metadata to stdout. We'll save it to a file, since we're working step-by-step:
 
 ```shell
 $ uptane-sign targets get-unsigned > canonicalized_targets.json
@@ -145,11 +166,9 @@ To do it automatically through uptane-sign, run the following command:
 $ uptane-sign targets sign --signatures uptane-signing-key-ed25519=$(cat targets_signed_base64.sig | tr -d '\n') --repo myimagerepo
 ```
 
-**What is `tr -d '\n'`?** This line is necessary because the string representation of the base64 encoded file will often
-have a `\n` appended at the end of the string, which will cause errors during signature verification.
+**What is `tr -d '\n'`?** This line is necessary because the string representation of the base64 encoded file will often have a `\n` appended at the end of the string, which will cause errors during signature verification.
 
-This command will automatically edit the file under `$ tuf/myimagerepo/roles/targets.json` with the updated version number,
-verify and add the passed in signature along with the keyid. The resulting signature field will look like this:
+This command will automatically edit the file under `$ tuf/myimagerepo/roles/targets.json` with the updated version number, verify and add the passed in signature along with the keyid. The resulting signature field will look like this:
 
 ```json
 {
@@ -166,7 +185,7 @@ verify and add the passed in signature along with the keyid. The resulting signa
 Last step: Push the signed targets metadata to the Torizon Cloud server:
 
 ```shell
-$ uptane-sign targets push --repo myimagerepo`
+$ uptane-sign targets push --repo myimagerepo
 ```
 
 Now, the targets metadata is signed using your offline ED25519 key on your Yubikey, and pushed to the Torizon Cloud
@@ -192,23 +211,27 @@ The process for generating RSASSA-PSS signatures is pretty much the same:
 4. Include the RSASSA-PSS signature in the signed metadata file
 5. Push it to the server.
 
-For generating RSA keys on a Yubikey, we can use the same command, except for the -A flag value, which should change
-from `ED25519` to `RSA`, and the output pubkey filename appropriately.
+For generating RSA keys on a Yubikey, we can use the same command, except for the -A flag value, which should change from `ED25519` to `RSA`, and the output pubkey filename appropriately.
 
-The major difference is in generating the digital signature. yubikey-piv-tool does not support PSS, and thus we have to
-use a different, low-level signing tool provided by OpenSC. For this, we can use `pkcs11-tool`, which provides a CLI
-for interfacing with and using different hardware modules for various security-related purposes, such as signing,
-generating digital certificates, etc. Since this command is a bit more low-level, we need to take the hash first, then pass it into the pkcs11-tool command:
+The major difference is in generating the digital signature. yubikey-piv-tool does not support PSS, and thus we have to use a different, low-level signing tool provided by OpenSC. For this, we can use `pkcs11-tool`, which provides a CLI for interfacing with and using different hardware modules for various security-related purposes, such as signing, generating digital certificates, etc. Since this command is a bit more low-level, we need to take the hash first, then pass it into the pkcs11-tool command:
 
 After canonicalizing the Targets metadata, the following steps should be followed:
-1. Generate the SHA256 hash of the canonicalized JSON: `$ shasum -a 256 canonicalized_targets.json | awk '{print $1}' | xxd -r -p > targets.sha256`
-2. Then sign this file using `pkcs11-tool`: `$ pkcs11-tool --module /opt/homebrew/lib/libykcs11.dylib --sign -m RSA-PKCS-PSS --hash-algorithm SHA256 -i targets.sha256 -o signed_targets.sig`
-3. Then convert it to base64: `$ base64 -i signed_targets.sig -o signed_targets_base64.sig`
+1. Generate the SHA256 hash of the canonicalized JSON, convert it from a hex string to binary, and write it to a file:
+```shell
+$ shasum -a 256 canonicalized_targets.json | awk '{print $1}' | xxd -r -p > targets.sha256
+```
+2. Then sign this file using `pkcs11-tool`: 
+```shell
+$ pkcs11-tool --module /opt/homebrew/lib/libykcs11.dylib --sign -m RSA-PKCS-PSS --hash-algorithm SHA256 -i targets.sha256 -o signed_targets.sig
+```
+3. Then convert the signature to base64:
+```shell
+$ base64 -i signed_targets.sig -o signed_targets_base64.sig
+```
 
 Note: For this method to work, there needs to be a pkcs11 module available for the HSM. Yubico provides one, called [libycks11](https://developers.yubico.com/yubico-piv-tool/YKCS11/). It's normally installed automatically with `yubico-piv-tool`, but the `pkcs11-tool` command needs to be told where to find this module. The example I've given works for MacOS; on Linux the module would typically be `/usr/local/lib/libykcs11.so`.
 
-Then, follow the same steps provided above to automatically add this external signature to the signed Targets metadata
-and push it to the server.
+Then, follow the same steps provided above to automatically add this external signature to the signed Targets metadata and push it to the server.
 
 Here we can also do the whole thing in one command, piped together:
 
@@ -224,13 +247,9 @@ $ uptane-sign targets sign --repo myimagerepo --signatures uptane-signing-key-rs
     )
 ```
 
-It goes without saying that your PIN should never be entered as a string as part of the command. For example, if it is
-123456 (the default PIN), it would not be advisable to call the pkcs11-tool signing command as
-`pkcs11-tool --module /opt/homebrew/lib/libykcs11.dylib --sign -m RSA-PKCS-PSS --hash-algorithm SHA256 --pin 1234567`,
-since an adversary could potentially gain access through your shell history.
+Note: this one-line example is for illustrative purposes only. You shouldn't actually write your Yubikey's PIN in the command line.
 
-We're all set! The public key associated with your private key on your Yubikey is now authorized to sign targets, and
-you don't have to worry about your keys getting compromised (provided you store the Yubikey safely).
+We're all set! The public key associated with your private key on your Yubikey is now authorized to sign targets, and you don't have to worry about your keys getting compromised (provided you store the Yubikey safely).
 
 ## TL;DR
 
@@ -250,7 +269,7 @@ $ yubico-piv-tool -a import-certificate -s 9c -k
 # import this key material as a targets key
 $ uptane-sign user-keys importpub -k uptane-signing-key-ed25519 -i uptane-signing-key-ed25519.pem
 $ uptane-sign root targets-key add -k uptane-signing-key-ed25519 --repo myimagerepo
-$ uptane-sign root sign -k origroot --repo myimagerepo # origroot is the registered root on the server currently. After we push the new root metadata, we should use myroot 
+$ uptane-sign root sign -k myroot --repo myimagerepo
 $ uptane-sign root push --repo myimagerepo
 
 # sign targets metadata
@@ -278,8 +297,6 @@ $ uptane-sign targets push --repo myimagerepo
 ```
 ## Conclusion
 
-We have successfully managed to take our keys for our Torizon Cloud repository offline, and use keys generated and
-stored on secure hardware. This was initially hard to do because of the lack of documentation, but hopefully this blog
-post helps future users of this feature to work it out swiftly, and the usage of hardware modules rises.
+We have successfully managed to take our keys for our Torizon Cloud repository offline, and use keys generated and stored on secure hardware. This was initially hard to do because it required figuring out a number of details about the exact signature scheme and settings to use for the external tooling, and understandably that wasn't documented on the Torizon site. This blog post provided a good, concrete example of how to do it with a Yubikey, and will help future users of this feature to get it working out of the box. Ultimately, more people using offline key storage and hardware modules is a good thing for software supply chains, and I hope this post encourages more people to do exactly that.
 
 Thanks for reading!
