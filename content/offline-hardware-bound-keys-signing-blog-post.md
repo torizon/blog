@@ -8,7 +8,7 @@ tags: ["Security", "Embedded", "Linux", "Uptane"]
 
 abstract: Getting the most out of Torizon Cloud and Uptane
 
-image: /TODO-add-image.jpg
+image: /offline-signing-yubikey.png
 ---
 
 Sometimes, when using security tools, there's a gap between what you can do in principle, and what you can do in practice. This blog post is about my experience going zero-trust with my Torizon Cloud repository, the obstacles I faced along the way, and how I actually got everything working.
