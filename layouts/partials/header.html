@@ -1,14 +1,24 @@
 <header>
     <nav>
         <div class="container">
-            <div class="navbar-logo"><a href="/"><img src="/img/logoOldButModern.png" /></a></div>
+            <div class="navbar-logo">
+                <a href="/" aria-label="Engineering at the Edge — home">
+                    <img src="/img/torizon-logo-dark-mode.svg" alt="Torizon" />
+                    <span class="navbar-tag">/ engineering</span>
+                </a>
+            </div>
             <ul>
                 <li {{ if (eq .RelPermalink "/") }} selected="true" {{end}} ><a href="/">Blog</a></li>
-                <!-- <li {{ if (eq .RelPermalink "/open-source") }} selected="true" {{end}} ><a href="#">Open Source</a></li>
-                <li {{ if (eq .RelPermalink "/about") }} selected="true" {{end}} ><a href="#">About</a></li> -->
-                <li><a href="https://www.torizon.io" target="_blank">Torizon.io <span class="inline-icon">{{ partial "fontawesome" "assets/fa/external.svg" }}</span></a></li>
+                <li><a href="https://www.torizon.io" target="_blank" rel="noopener">Torizon.io <span class="inline-icon">{{ partial "fontawesome" "assets/fa/external.svg" }}</span></a></li>
             </ul>
-            <div class="github-icon"><a href="https://github.com/torizon/blog" target="_blank"><span class="inline-icon">{{ partial "fontawesome"  "assets/fa/github.svg" }}</span></a></div>
+            <div class="header-icons">
+                <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+                    <span class="inline-icon icon-moon">{{ partial "fontawesome" "assets/fa/moon.svg" }}</span>
+                    <span class="inline-icon icon-sun">{{ partial "fontawesome" "assets/fa/sun.svg" }}</span>
+                </button>
+                <a href="/index.xml" aria-label="RSS feed"><span class="inline-icon">{{ partial "fontawesome" "assets/fa/rss.svg" }}</span></a>
+                <a href="https://github.com/torizon/blog" target="_blank" rel="noopener" aria-label="GitHub"><span class="inline-icon">{{ partial "fontawesome"  "assets/fa/github.svg" }}</span></a>
+            </div>
         </div>
     </nav>
 </header>

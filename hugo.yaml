@@ -7,6 +7,7 @@ title: Engineering at the Edge
 pagination.pagerSize: 6
 
 params:
+  description: "Notes from the Torizon R&D team on Linux, embedded, containers, and security — pure engineering, straight from the field."
   tags: [Linux, Embedded, Container, Security, Performance, Container, IoT, Over-the-Air, Machine Learning, GUI]
 
 markup:

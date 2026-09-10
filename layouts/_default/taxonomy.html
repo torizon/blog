@@ -1,0 +1,17 @@
+{{ define "main" }}
+<div id="tag-hero">
+    <div class="container">
+        <p class="hero-kicker">grep -rl "{{ .Title }}" ~/torizon/rnd/blog</p>
+        <h1>#{{ .Title }}</h1>
+        <p>{{ len .Pages }} post{{ if ne (len .Pages) 1 }}s{{ end }} tagged <strong>{{ .Title }}</strong> · <a href="{{ "/tags/" | relURL }}">all tags</a> · <a href="{{ "/" | relURL }}">all posts</a></p>
+    </div>
+</div>
+
+<main class="container tag-page" id="posts-list">
+    <div id="posts">
+        {{ range .Pages.ByDate.Reverse }}
+        {{ partial "post-card.html" . }}
+        {{ end }}
+    </div>
+</main>
+{{ end }}

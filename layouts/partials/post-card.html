@@ -1,0 +1,30 @@
+{{/* Compact post card. Context (.) is a Page. */}}
+<div class="card">
+    {{ if .Params.Image }}
+    <a href="{{ .Permalink }}"><img src="{{ .Params.Image }}" alt="{{ .Title }}"></a>
+    {{ else }}
+    <a href="{{ .Permalink }}" class="card-thumb-fallback" aria-hidden="true"><img src="/img/torizon-avatar.svg" alt=""></a>
+    {{ end }}
+    <div class="card-content">
+        <p class="card-date">{{ .Date.Format "January 02, 2006" }}</p>
+        {{ if .Params.Series }}<h6>{{ .Params.Series }}</h6>{{ end }}
+        <h4 class="card-title"><a href="{{ .Permalink }}">{{ .Title }}</a></h4>
+        <p class="card-description">{{ .Params.Abstract | truncate 100 }}</p>
+        {{ with .Params.Author }}
+        {{ $parts := split . "," }}
+        <div class="card-byline">
+            {{ if $.Params.userId }}
+            <img class="byline-avatar" src="https://avatars.githubusercontent.com/u/{{ $.Params.userId }}" alt="{{ index $parts 0 }}" />
+            {{ end }}
+            <span class="byline-name">{{ trim (index $parts 0) " " }}</span>
+        </div>
+        {{ end }}
+        {{ with .Params.tags }}
+        <p class="card-tags">
+            {{ range . }}
+            <a href="{{ (printf "/tags/%s/" (. | urlize)) | relURL }}">{{ . }}</a>
+            {{ end }}
+        </p>
+        {{ end }}
+    </div>
+</div>
