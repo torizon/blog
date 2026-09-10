@@ -17,6 +17,27 @@ window.addEventListener('scroll', () => {
     }
 });
 
+/**
+ * Dark / light mode toggle. The initial theme is applied in the <head> to
+ * avoid a flash; here we wire the header button and persist the choice.
+ */
+document.addEventListener('DOMContentLoaded', function () {
+    var toggle = document.getElementById('theme-toggle');
+    if (!toggle) return;
+
+    function currentTheme() {
+        var attr = document.documentElement.getAttribute('data-theme');
+        if (attr) return attr;
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    toggle.addEventListener('click', function () {
+        var next = currentTheme() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try { localStorage.setItem('theme', next); } catch (e) {}
+    });
+});
+
 function openGithubProfileFromUserId(id) {
     fetch('https://api.github.com/user/' + id)
         .then(response => response.json())
