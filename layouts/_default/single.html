@@ -16,6 +16,13 @@
             </p>
         </a>
         <div>{{ .Content }}</div>
+        {{ with .Params.tags }}
+        <p class="article-tags">
+            {{ range . }}
+            <a href="{{ (printf "/tags/%s/" (. | urlize)) | relURL }}">{{ . }}</a>
+            {{ end }}
+        </p>
+        {{ end }}
         <div id="inline-share">
             <p>SHARE</p>
             <p>
