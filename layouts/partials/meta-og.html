@@ -1,17 +1,26 @@
-{{ if .Params.title }}
-    <meta property="og:title" content="{{ .Params.title }}" />
-{{ else }}
-    <meta property="og:title" content="Engineering at the Edge" />
+{{ $title := .Title | default "Engineering at the Edge" }}
+{{ $description := or .Params.Description .Params.Abstract .Site.Params.description }}
+
+{{/* Prefer an explicit ogImage, else the post image; fall back to the site default.
+     Only absolute (http) or root-relative (/foo) paths are usable as social images. */}}
+{{ $img := absURL "img/mainOg.jpg" }}
+{{ $src := or .Params.ogImage .Params.Image }}
+{{ with $src }}
+    {{ if or (hasPrefix . "http://") (hasPrefix . "https://") }}
+        {{ $img = . }}
+    {{ else if hasPrefix . "/" }}
+        {{ $img = (. | absURL) }}
+    {{ end }}
 {{ end }}
-{{ if .Params.abstract }}
-    <meta property="og:description" content="{{ .Params.abstract }}" />
-{{ end }}
-{{ if .Params.title }}
-    <meta property="og:type" content="aticle" />
-{{ end }}
-    <meta property="og:url" content="{{ .Permalink }}" />
-{{ if .Params.ogImage }}
-    <meta property="og:image" content="{{ .Site.BaseURL }}{{ .Params.ogImage }}" />
-{{ else }}
-    <meta property="og:image" content="{{ .Site.BaseURL }}img/mainOg.jpg" />
-{{ end }}
+
+<meta property="og:title" content="{{ $title }}" />
+{{ with $description }}<meta property="og:description" content="{{ . }}" />{{ end }}
+<meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}" />
+<meta property="og:url" content="{{ .Permalink }}" />
+<meta property="og:image" content="{{ $img }}" />
+<meta property="og:site_name" content="{{ .Site.Title }}" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="{{ $title }}" />
+{{ with $description }}<meta name="twitter:description" content="{{ . }}" />{{ end }}
+<meta name="twitter:image" content="{{ $img }}" />
